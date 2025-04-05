@@ -24,8 +24,8 @@
 	</properties>
 
 	<modules>
-		<module>stat-service</module>
 		<module>main-service</module>
+		<module>stat-service</module>
 	</modules>
 
 
