@@ -1,4 +1,4 @@
-package stats;
+package stat;
 
 import client.BaseClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +28,6 @@ public class StatClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getStats(ViewStatsDto statsRequestDto) {
-        return get("/stats", statsRequestDto);
+        return get("/stat", statsRequestDto);
     }
 }
