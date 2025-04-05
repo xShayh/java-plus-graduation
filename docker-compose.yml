@@ -1,8 +1,8 @@
 services:
   stat-server:
-    build: stat
-    image: stat_image
-    container_name: stat
+    build: stat-service
+    image: stat_service_image
+    container_name: stat-service_container
     ports:
       - "9090:9090"
     depends_on:
