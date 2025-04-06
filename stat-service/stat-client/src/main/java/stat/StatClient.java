@@ -1,7 +1,6 @@
 package stat;
 
 import client.BaseClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import ru.practicum.dto.ViewStatsDto;
 
 @Service
 public class StatClient extends BaseClient {
-    @Autowired
     public StatClient(@Value("${server.url}") String statServerUrl, RestTemplateBuilder builder) {
         super(
                 builder

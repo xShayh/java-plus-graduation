@@ -1,5 +1,6 @@
 package client;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -7,12 +8,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+@AllArgsConstructor
 public class BaseClient {
     protected final RestTemplate rest;
 
-    public BaseClient(RestTemplate rest) {
-        this.rest = rest;
-    }
 
     protected ResponseEntity<Object> get(String path, Object parameters) {
         return makeAndSendRequest(HttpMethod.GET, path, parameters, null);

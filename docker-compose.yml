@@ -4,15 +4,19 @@ services:
     container_name: postgres
     ports:
       - "6541:5432"
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data/
     environment:
       - POSTGRES_PASSWORD=stats
       - POSTGRES_USER=stats
       - POSTGRES_DB=stats
+
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
       interval: 5s
       retries: 10
+
   stats-server:
     build: ./stat-service/stat-server
     image: stat-server
@@ -25,6 +29,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
       - SPRING_DATASOURCE_USERNAME=stats
       - SPRING_DATASOURCE_PASSWORD=stats
+    restart: on-failure
 
 volumes:
   stat_db_data:
