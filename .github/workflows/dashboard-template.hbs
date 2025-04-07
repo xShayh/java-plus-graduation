@@ -470,7 +470,7 @@ body.theme-light code {
                 <a class="nav-link text-white" id="pills-summary-tab" data-toggle="pill" href="#pills-summary" role="tab" aria-controls="pills-summary" aria-selected="true">Сводные данные</a>
             </li>
             <li class="nav-item bg-success" data-toggle="tooltip" title="Click to view the Requests">
-                <a class="nav-link text-white" id="pills-requests-tab" data-toggle="pill" href="#pills-requests" role="tab" aria-controls="pills-requests" aria-selected="false">Всего запросов <span class="badge badge-light">{{stats.requests.total}}</span></a>
+                <a class="nav-link text-white" id="pills-requests-tab" data-toggle="pill" href="#pills-requests" role="tab" aria-controls="pills-requests" aria-selected="false">Всего запросов <span class="badge badge-light">{{stat.requests.total}}</span></a>
             </li>
             <li class="nav-item bg-danger" data-toggle="tooltip" title="Click to view the Failed Tests">
                 <a class="nav-link text-white" id="pills-failed-tab" data-toggle="pill" href="#pills-failed" role="tab" aria-controls="pills-failed" aria-selected="false">Проваленные тесты <span class="badge badge-light">{{failures.length}}</span></a>
@@ -495,7 +495,7 @@ body.theme-light code {
         <i class="fa fa-retweet fa-5x"></i>
        </div>
        <h6 class="text-uppercase">Итого итераций</h6>
-       <h1 class="display-{{#gt stats.assertions.total 999 }}4{{else}}1{{/gt}}">{{stats.iterations.total}}</h1>
+       <h1 class="display-{{#gt stat.assertions.total 999 }}4{{else}}1{{/gt}}">{{stat.iterations.total}}</h1>
       </div>
      </div>
     </div>
@@ -506,7 +506,7 @@ body.theme-light code {
         <i class="fa fa-list fa-4x"></i>
        </div>
        <h6 class="text-uppercase">Всего проверенных утверждений</h6>
-       <h1 class="display-{{#gt stats.assertions.total 999 }}4{{else}}1{{/gt}}">{{totalTests stats.assertions.total skippedTests.length}}</h1>
+       <h1 class="display-{{#gt stat.assertions.total 999 }}4{{else}}1{{/gt}}">{{totalTests stat.assertions.total skippedTests.length}}</h1>
       </div>
      </div>
     </div>
@@ -517,7 +517,7 @@ body.theme-light code {
         <i class="fa fa-plus-circle fa-5x"></i>
        </div>
        <h6 class="text-uppercase">Всего проваленных тестов</h6>
-       <h1 class="display-{{#gt stats.assertions.total 999 }}4{{else}}1{{/gt}}">{{failures.length}}</h1>
+       <h1 class="display-{{#gt stat.assertions.total 999 }}4{{else}}1{{/gt}}">{{failures.length}}</h1>
       </div>
      </div>
     </div>
@@ -528,7 +528,7 @@ body.theme-light code {
         <i class="fa fa-share fa-5x"></i>
        </div>
        <h6 class="text-uppercase">Всего пропущено тестов</h6>
-       <h1 class="display-{{#gt stats.assertions.total 999 }}4{{else}}1{{/gt}}">{{#gt skippedTests.length 0}}{{skippedTests.length}}{{else}}0{{/gt}}</h1>
+       <h1 class="display-{{#gt stat.assertions.total 999 }}4{{else}}1{{/gt}}">{{#gt skippedTests.length 0}}{{skippedTests.length}}{{else}}0{{/gt}}</h1>
       </div>
      </div>
     </div>
@@ -665,7 +665,7 @@ body.theme-light code {
                     </tr>
                 </thead>
                 <tbody>
-                {{#with summary.stats}}
+                {{#with summary.stat}}
                     <tr>
                         <td>Requests</td>
                         <td class="text-center">{{requests.total}}</td>
@@ -685,8 +685,8 @@ body.theme-light code {
                     {{#with summary}}
                     <tr class="{{#gt failures.length 0}}table-danger{{/gt}}">
                         <td>Assertions</td>
-                        <td class="text-center">{{totalTests stats.assertions.total skippedTests.length}}</td>
-                        <td class="text-center">{{stats.assertions.failed}}</td>
+                        <td class="text-center">{{totalTests stat.assertions.total skippedTests.length}}</td>
+                        <td class="text-center">{{stat.assertions.failed}}</td>
                     </tr>
                     <tr class="{{#gt skippedTests.length 0}}table-warning{{/gt}}">
                         <td>Skipped Tests</td>
@@ -803,11 +803,11 @@ body.theme-light code {
 
     <div class="text-uppercase" id="execution-menu">
         {{#with summary}}
-        <h5>{{stats.iterations.total}} {{#gt stats.iterations.total 1}}Iterations{{else}}Iteration{{/gt}} available to view</h5>
-        {{#gt stats.iterations.total 18}}<input class="form-control w-25" style="margin-bottom: 5px;" id="filterInput" type="number" min="1" placeholder="Filter Iterations">{{/gt}}
+        <h5>{{stat.iterations.total}} {{#gt stat.iterations.total 1}}Iterations{{else}}Iteration{{/gt}} available to view</h5>
+        {{#gt stat.iterations.total 18}}<input class="form-control w-25" style="margin-bottom: 5px;" id="filterInput" type="number" min="1" placeholder="Filter Iterations">{{/gt}}
         {{/with}}
         <nav class="table-responsive">
-        <ul class="nav {{#gt summary.stats.iterations.total 18}}nav-tabs{{else}}single-line-tabs{{/gt}}" id="iterationList">
+        <ul class="nav {{#gt summary.stat.iterations.total 18}}nav-tabs{{else}}single-line-tabs{{/gt}}" id="iterationList">
         </ul>
         </nav>
     </div>
@@ -1577,7 +1577,7 @@ window.onload = function () {
     elem.style.display = 'block';
   });
 
-  {{#with summary}} {{#with stats}}
+  {{#with summary}} {{#with stat}}
   let totalIterations = {{iterations.total}};
   {{/with}} {{/with}}
 

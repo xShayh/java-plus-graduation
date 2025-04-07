@@ -10,13 +10,17 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+
     <artifactId>stat-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>stat-server</module>
-        <module>stat-dto</module>
         <module>stat-client</module>
+        <module>stat-dto</module>
+        <module>stat-server</module>
     </modules>
 </project>
