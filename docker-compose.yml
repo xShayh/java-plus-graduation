@@ -48,7 +48,7 @@ services:
 
   ewm-db:
     image: postgres:16.1
-    container_name: emv-db
+    container_name: ewm-db
     ports:
         - "6540:5432"
     volumes:
