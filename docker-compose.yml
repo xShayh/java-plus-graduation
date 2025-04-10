@@ -42,8 +42,8 @@ services:
     environment:
        - CLIENT_URL=http://stats-server:9090
        - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
-       - POSTGRES_USER=user
-       - POSTGRES_PASSWORD=12345
+       - SPRING_DATASOURCE_USERNAME=user
+       - SPRING_DATASOURCE_PASSWORD=12345
     restart: on-failure
 
   ewm-db:
