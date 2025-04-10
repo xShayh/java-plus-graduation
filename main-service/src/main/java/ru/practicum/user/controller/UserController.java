@@ -1,7 +1,6 @@
 package ru.practicum.user.controller;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import ru.practicum.user.service.UserService;
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
 @RequiredArgsConstructor
 @RequestMapping(path = "/admin/users")
 public class UserController {
