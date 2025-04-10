@@ -31,13 +31,13 @@ services:
       - SPRING_DATASOURCE_PASSWORD=stats
     restart: on-failure
 
-  emv-service:
+  ewm-service:
     build: main-service
     container_name: main-service
     ports:
       - "8080:8080"
     depends_on:
-      - emv-db
+      - ewm-db
       - stats-server
     environment:
       - CLIENT_URL=http://stats-server:9090
@@ -46,7 +46,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=12345
     restart: on-failure
 
-  emv-db:
+  ewm-db:
     image: postgres:16.1
     container_name: emv-db
     ports:
