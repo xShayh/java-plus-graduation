@@ -37,7 +37,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - emw-db
+      - emv-db
       - stats-server
     environment:
       - CLIENT_URL=http://stats-server:9090
@@ -55,8 +55,8 @@ services:
         - ./volumes/postgres:/var/lib/postgresql/data/
     environment:
         - POSTGRES_USER=user
-         - POSTGRES_PASSWORD=12345
-         - POSTGRES_DB=emv
+        - POSTGRES_PASSWORD=12345
+        - POSTGRES_DB=emv
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
