@@ -1,7 +1,6 @@
 package ru.practicum.user.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserShortDto;
