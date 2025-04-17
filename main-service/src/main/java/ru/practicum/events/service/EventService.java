@@ -2,18 +2,13 @@ package ru.practicum.events.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.events.dto.*;
-import ru.practicum.events.params.EventAdminParams;
-import ru.practicum.events.params.EventPublicParam;
+import ru.practicum.events.dto.EventAdminParams;
+import ru.practicum.events.dto.EventPublicParam;
 
 import java.util.List;
 
 @Transactional(readOnly = true)
 public interface EventService {
-
-    List<EventFullDto> adminGetEvents(EventAdminParams eventParams);
-
-    @Transactional
-    EventFullDto updateAdminEvent(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest);
 
     List<EventShortDto> getEventsByUser(Integer userId, Integer from, Integer size);
 
@@ -24,6 +19,11 @@ public interface EventService {
 
     @Transactional
     EventFullDto updateEventByUser(Integer userId, Integer eventId, UpdateEventUserDto updateEventUserDto);
+
+    @Transactional
+    EventFullDto updateAdminEvent(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest);
+
+    List<EventFullDto> adminGetEvents(EventAdminParams eventParams);
 
     List<EventShortDto> publicGetEvents(EventPublicParam eventPublicParam);
 

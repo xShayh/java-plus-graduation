@@ -8,14 +8,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.events.dto.EventFullDto;
 import ru.practicum.events.dto.UpdateEventAdminRequest;
-import ru.practicum.events.params.EventAdminParams;
+import ru.practicum.events.dto.EventAdminParams;
 import ru.practicum.events.service.EventService;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/admin/events")
+@RequestMapping("/admin/events")
 @RequiredArgsConstructor
 @Validated
 public class EventAdminController {

@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class UpdateEventUserDto {
     @Size(min = 20, max = 2000)
     private String annotation;
-    private CategoryDto category;
+    private Integer category;
 
     @Size(min = 20, max = 7000)
     private String description;
@@ -27,9 +27,8 @@ public class UpdateEventUserDto {
     private LocalDateTime eventDate;
     private Location location;
     private Boolean paid;
-
     @PositiveOrZero
-    private Integer participantLimit;
+    private Long participantLimit;
     private Boolean requestModeration;
     private StateActionForUser stateAction;
 

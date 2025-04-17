@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class NewCategoryDto {
     @NotBlank
     @Size(min = 1, max = 50)

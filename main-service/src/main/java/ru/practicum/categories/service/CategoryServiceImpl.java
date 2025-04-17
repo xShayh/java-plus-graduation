@@ -1,6 +1,7 @@
 package ru.practicum.categories.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -26,6 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
+        log.info("Creating a new category");
         return categoryMapper.toCategoryDto(categoryRepository.save(
                 categoryMapper.toNewCategory(newCategoryDto)));
     }
@@ -34,6 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto updateCategory(Integer catId, CategoryDto categoryDto) {
         Category category = getCategoryById(catId);
         category.setName(categoryDto.getName());
+        log.info("Category with ID={} was updated", catId);
         return categoryMapper.toCategoryDto(categoryRepository.save(category));
     }
 
@@ -44,11 +48,13 @@ public class CategoryServiceImpl implements CategoryService {
             throw new InvalidParameterException("Category is related to event");
         }
         categoryRepository.deleteById(catId);
+        log.info("Category with ID={} was deleted", catId);
     }
 
     @Override
     public CategoryDto getCategory(Integer catId) {
         Category category = getCategoryById(catId);
+        log.info("Получение категории с ID={}", catId);
         return categoryMapper.toCategoryDto(category);
     }
 

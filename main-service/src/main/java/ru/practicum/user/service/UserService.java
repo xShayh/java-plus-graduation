@@ -9,11 +9,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface UserService {
 
-    List<UserDto> getUsers(UserParams userParams);
-
     @Transactional
     UserDto addUser(UserDto userDto);
 
     @Transactional
     void deleteUser(Integer userId);
+
+    List<UserDto> getUsers(UserParams userParams);
 }

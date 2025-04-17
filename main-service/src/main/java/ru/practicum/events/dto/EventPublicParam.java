@@ -1,4 +1,4 @@
-package ru.practicum.events.params;
+package ru.practicum.events.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class EventPublicParam {
     private String text;
-    private List<Integer> categoriesIds;
+    private List<Integer> category;
     private Boolean paid;
     private LocalDateTime rangeStart;
     private LocalDateTime rangeEnd;
