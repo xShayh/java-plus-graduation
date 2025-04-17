@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.categories.dto.CategoryDto;
 import ru.practicum.events.model.Location;
 import ru.practicum.events.util.StateActionForUser;
 
