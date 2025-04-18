@@ -13,8 +13,8 @@ import ru.practicum.request.model.RequestStatus;
 @Builder(toBuilder = true)
 public class RequestDto {
     private String created;
-    private Long event;
-    private Long id;
-    private Long requester;
+    private Integer event;
+    private Integer id;
+    private Integer requester;
     private RequestStatus status;
 }
