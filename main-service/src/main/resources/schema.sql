@@ -3,3 +3,16 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(250) NOT NULL,
     email VARCHAR(254) NOT NULL UNIQUE
 );
+
+CREATE TYPE request_status AS ENUM ('PENDING', 'CONFIRMED', 'REJECTED', 'CANCELED');
+
+CREATE TABLE IF NOT EXISTS requests (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    created TIMESTAMP,
+    event_id BIGINT,
+    requester_id BIGINT,
+    status request_status,
+
+    CONSTRAINT fk_event_id FOREIGN KEY (event_id) REFERENCES events(id),
+    CONSTRAINT fk_requester_id FOREIGN KEY (requester_id) REFERENCES users(id)
+);
