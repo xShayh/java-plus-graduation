@@ -2,7 +2,6 @@ package ru.practicum.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,24 +22,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<UserDto> getUsers(UserParams userParams) {
-        if (userParams.getIds() != null && !userParams.getIds().isEmpty()) {
-            return userRepository.findAllById(userParams.getIds()).stream()
-                    .map(userMapper::toUserDto)
-                    .toList();
-        } else {
-            Pageable page = PageRequest.of(userParams.getFrom() / userParams.getSize(), userParams.getSize());
-            Page<User> userPage = userRepository.findAll(page);
-            return userPage.stream()
-                    .map(userMapper::toUserDto)
-                    .toList();
-        }
-    }
-
-    @Override
     public UserDto addUser(UserDto userDto) {
-        User user = userMapper.toUser(userDto);
-        userRepository.save(user);
+        log.info("Beginning create new user");
+        User user = userRepository.save(userMapper.toUser(userDto));
         log.info("User with ID= {} has been created", user.getId());
         return userMapper.toUserDto(user);
     }
@@ -48,14 +32,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Integer userId) {
         if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User with ID= " + userId + "not found");
+            throw new NotFoundException("User with ID= " + userId + " not found");
         }
         userRepository.deleteById(userId);
         log.info("User with ID= {} has been deleted", userId);
     }
 
-    private UserDto findUser(Integer userId) {
-        return userMapper.toUserDto(userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User with ID= " + userId + "not found")));
+    @Override
+    public List<UserDto> getUsers(UserParams userParam) {
+        Pageable page = PageRequest.of(userParam.getFrom() / userParam.getSize(), userParam.getSize());
+        return userParam.getIds() != null && !userParam.getIds().isEmpty() ?
+                userRepository.findAllById(userParam.getIds()).stream().map(userMapper::toUserDto).toList() :
+                userRepository.findAll(page).stream().map(userMapper::toUserDto).toList();
     }
 }
