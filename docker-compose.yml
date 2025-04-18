@@ -3,7 +3,7 @@ services:
     image: postgres:16.1
     container_name: postgres
     ports:
-      - "5432:5432"
+      - "6541:5432"
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data/
     environment:
@@ -22,13 +22,13 @@ services:
     image: stat-server
     container_name: stat-server
     ports:
-       - "9090:9090"
+      - "9090:9090"
     depends_on:
-       - stats-db
+      - stats-db
     environment:
-       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
-       - SPRING_DATASOURCE_USERNAME=stats
-       - SPRING_DATASOURCE_PASSWORD=stats
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
+      - SPRING_DATASOURCE_USERNAME=stats
+      - SPRING_DATASOURCE_PASSWORD=stats
     restart: on-failure
 
   ewm-service:
@@ -49,13 +49,13 @@ services:
     image: postgres:16.1
     container_name: ewm-db
     ports:
-        - "6540:5432"
+      - "6540:5432"
     environment:
-        - POSTGRES_PASSWORD=stats
-        - POSTGRES_USER=stats
-        - POSTGRES_DB=ewm
+      - POSTGRES_PASSWORD=stats
+      - POSTGRES_USER=stats
+      - POSTGRES_DB=ewm
     healthcheck:
-        test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-        timeout: 5s
-        interval: 5s
-        retries: 10
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
