@@ -1,17 +1,19 @@
-package ru.practicum.request.repository;
+package ru.practicum.request.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.event.model.Event;
+import ru.practicum.events.model.Event;
+import ru.practicum.events.repository.EventRepository;
+import ru.practicum.events.util.EventState;
 import ru.practicum.exceptions.InvalidDataException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.RequestStatus;
-import ru.practicum.request.service.RequestService;
+import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
@@ -29,14 +31,14 @@ public class RequestServiceImpl implements RequestService {
     private final UserRepository userRepository;
 
     @Override
-    public List<RequestDto> getRequests(Long userId) {
+    public List<RequestDto> getRequests(Integer userId) {
         getUser(userId);
         return RequestMapper.INSTANCE.mapListRequests(requestRepository.findAllByRequester_Id(userId));
     }
 
     @Transactional
     @Override
-    public RequestDto createRequest(Long userId, Long eventId) {
+    public RequestDto createRequest(Integer userId, Integer eventId) {
         Event event = getEvent(eventId);
         User user = getUser(userId);
         checkRequest(userId, event);
@@ -58,7 +60,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public RequestDto cancelRequest(Long userId, Long requestId) {
+    public RequestDto cancelRequest(Integer userId, Integer requestId) {
         getUser(userId);
         Request request = getRequest(requestId);
         if (!request.getRequester().getId().equals(userId))
@@ -71,7 +73,7 @@ public class RequestServiceImpl implements RequestService {
         return RequestMapper.INSTANCE.mapToRequestDto(request);
     }
 
-    private void checkRequest(Long userId, Event event) {
+    private void checkRequest(Integer userId, Event event) {
         if (!requestRepository.findAllByRequester_IdAndEvent_id(userId, event.getId()).isEmpty())
             throw new InvalidDataException("Нельзя создать повторный запрос");
         if (event.getInitiator().getId().equals(userId))
@@ -82,21 +84,21 @@ public class RequestServiceImpl implements RequestService {
             throw new InvalidDataException("У события достигнут лимит запросов на участие");
     }
 
-    private Event getEvent(Long eventId) {
+    private Event getEvent(Integer eventId) {
         Optional<Event> event = eventRepository.findById(eventId);
         if (event.isEmpty())
             throw new NotFoundException("События с id " + eventId.toString() + " не существует");
         return event.get();
     }
 
-    private User getUser(Long userId) {
+    private User getUser(Integer userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty())
             throw new NotFoundException("Пользователя с id " + userId.toString() + " не существует");
         return user.get();
     }
 
-    private Request getRequest(Long requestId) {
+    private Request getRequest(Integer requestId) {
         Optional<Request> request = requestRepository.findById(requestId);
         if (request.isEmpty())
             throw new NotFoundException("Запроса с id " + requestId.toString() + " не существует");

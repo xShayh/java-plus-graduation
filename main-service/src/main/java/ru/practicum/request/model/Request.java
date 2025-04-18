@@ -1,11 +1,11 @@
 package ru.practicum.request.model;
 
-import ru.practicum.event.model.Event;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.events.model.Event;
 import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private LocalDateTime created;
 
