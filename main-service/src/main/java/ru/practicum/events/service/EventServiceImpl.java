@@ -18,6 +18,7 @@ import ru.practicum.events.repository.LocationRepository;
 import ru.practicum.events.util.AdminEventState;
 import ru.practicum.events.util.EventState;
 import ru.practicum.events.util.StateActionForUser;
+import ru.practicum.exceptions.EventDateValidationException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
@@ -130,7 +131,7 @@ public class EventServiceImpl implements EventService {
         log.info("Создание события пользователем с ID={}", userId);
         if (newEventDto.getEventDate() != null && !newEventDto.getEventDate()
                 .isAfter(LocalDateTime.now().plusHours(2))) {
-            throw new RuntimeException("Event date should be in 2+ hours after now");
+            throw new EventDateValidationException("Event date should be in 2+ hours after now");
         }
         Category category = categoryRepository.findById(newEventDto.getCategory())
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found", newEventDto.getCategory())));
@@ -167,7 +168,7 @@ public class EventServiceImpl implements EventService {
             throw new InvalidParameterException("Event is already published");
         }
         if (updateEventUserDto.getEventDate() != null && !updateEventUserDto.getEventDate().isAfter(LocalDateTime.now().plusHours(2))) {
-            throw new InvalidParameterException("Event date should be in 2+ hours after now");
+            throw new EventDateValidationException("Event date should be in 2+ hours after now");
         }
         if (updateEventUserDto.getAnnotation() != null) {
             event.setAnnotation(updateEventUserDto.getAnnotation());
@@ -221,7 +222,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (eventPublicParam.getRangeStart().isAfter(eventPublicParam.getRangeEnd())) {
-            throw new NotFoundException("End date should be before start date");
+            throw new EventDateValidationException("End date should be before start date");
         }
 
         List<Event> events = eventRepository.findPublicEvents(
