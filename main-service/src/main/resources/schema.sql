@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS events (
     views BIGINT
 );
 
+-- чтобы не падало при повторном запуске - надо чистить таблицы в БД или закомментить строку
 CREATE TYPE request_status AS ENUM ('PENDING', 'CONFIRMED', 'REJECTED', 'CANCELED');
 
 CREATE TABLE IF NOT EXISTS requests (
@@ -45,4 +46,21 @@ CREATE TABLE IF NOT EXISTS requests (
 
     CONSTRAINT fk_event_id FOREIGN KEY (event_id) REFERENCES events(id),
     CONSTRAINT fk_requester_id FOREIGN KEY (requester_id) REFERENCES users(id)
+);
+
+-- Таблица подборок
+CREATE TABLE IF NOT EXISTS compilations (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title VARCHAR(50) NOT NULL,
+    pinned BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+-- Связующая таблица подборка-событие
+CREATE TABLE IF NOT EXISTS compilation_events (
+   compilation_id BIGINT NOT NULL,
+   event_id BIGINT NOT NULL,
+   PRIMARY KEY (compilation_id, event_id),
+
+   CONSTRAINT fk_compilation FOREIGN KEY (compilation_id) REFERENCES compilations(id) ON DELETE CASCADE,
+   CONSTRAINT fk_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
