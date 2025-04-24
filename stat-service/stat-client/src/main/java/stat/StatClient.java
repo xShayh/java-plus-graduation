@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.dto.EndpointHitDto;
 
 import java.util.*;
@@ -31,19 +32,32 @@ public class StatClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
-        if (start == null || end == null) {
-            throw new IllegalArgumentException("Start and end parameters must not be null.");
+        log.info("Start building request for getStats()");
+        log.info("Input parameters - Start: {}, End: {}, URIs: {}, Unique: {}", start, end, uris, unique);
+        if (start == null || start.trim().isEmpty()) {
+            log.info("Start date is null or empty!");
+            throw new IllegalArgumentException("Start date cannot be null or empty");
         }
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("start", start);
-        parameters.put("end", end);
-        parameters.put("unique", unique);
+        if (end == null || end.trim().isEmpty()) {
+            log.info("End date is null or empty!");
+            throw new IllegalArgumentException("End date cannot be null or empty");
+        }
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/stats")
+                .queryParam("start", start)
+                .queryParam("end", end)
+                .queryParam("unique", unique);
         if (uris != null && !uris.isEmpty()) {
-            parameters.put("uris", String.join(",", uris));
+            uriBuilder.queryParam("uris", String.join(",", uris));
+            log.info("Uris added to the path: {}", uris);
         }
-        log.info("Sending request with parameters:{}", parameters);
-        return get("/stats?start={start}&end={end}&unique={unique}" +
-                        (uris != null && !uris.isEmpty() ? "&uris={uris}" : ""),
-                parameters);
+        log.info("Final request URI: {}", uriBuilder.toUriString());
+        try {
+            ResponseEntity<Object> response = get(uriBuilder.toUriString(), new HashMap<>());
+            log.info("Response received: {}", response);
+            return response;
+        } catch (Exception e) {
+            log.info("Error occurred while making the request: {}", e.getMessage(), e);
+            throw new RuntimeException("Error during stats request", e);
+        }
     }
 }
