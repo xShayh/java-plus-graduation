@@ -5,13 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.categories.repository.CategoryRepository;
 import ru.practicum.categories.model.Category;
-import ru.practicum.dto.StatsRequestDto;
-import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.events.dto.*;
 import ru.practicum.events.mapper.EventMapper;
 import ru.practicum.events.model.Event;
@@ -30,8 +27,6 @@ import stat.StatClient;
 
 import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
