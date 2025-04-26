@@ -40,9 +40,10 @@ services:
       - ewm-db
       - stats-server
     environment:
+      - SERVER_URL=http://localhost:9090
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
-      - POSTGRES_USER=stats
-      - POSTGRES_PASSWORD=stats
+      - SPRING_DATASOURCE_USERNAME=stats
+      - SPRING_DATASOURCE_PASSWORD=stats
     restart: on-failure
 
   ewm-db:
@@ -51,7 +52,7 @@ services:
     ports:
       - "6540:5432"
     volumes:
-      - ./volumes/postgres:/var/lib/postgresql/data/
+      - ./db/postgres:/var/lib/postgresql/data/
     environment:
       - POSTGRES_PASSWORD=stats
       - POSTGRES_USER=stats

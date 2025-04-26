@@ -25,10 +25,10 @@ CREATE TABLE IF NOT EXISTS events (
     event_date TIMESTAMP WITHOUT TIME ZONE,
     initiator_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     location_id INTEGER REFERENCES locations(id) ON DELETE CASCADE,
-    paid BOOlEAN,
+    paid BOOLEAN,
     participant_limit BIGINT,
     published_on TIMESTAMP WITHOUT TIME ZONE,
-    request_moderation BOOlEAN,
+    request_moderation BOOLEAN,
     state VARCHAR(150),
     title VARCHAR(150),
     views BIGINT
