@@ -1,5 +1,7 @@
 package ru.practicum.events.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.categories.repository.CategoryRepository;
 import ru.practicum.categories.model.Category;
+import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.events.dto.*;
 import ru.practicum.events.mapper.EventMapper;
 import ru.practicum.events.model.Event;
@@ -278,9 +281,16 @@ public class EventServiceImpl implements EventService {
 
 
     private void addViews(String uri, Event event) {
-        System.out.println("Start: " + START + ", End: " + END + ", URIs: " + uri + ", Unique: " + false);
         ResponseEntity<Object> response = statClient.getStats(START, END, List.of(uri), false);
-
+        ObjectMapper mapper = new ObjectMapper();
+        List<ViewStatsDto> views = mapper.convertValue(response.getBody(), new TypeReference<List<ViewStatsDto>>() {
+        });
+        if (views.isEmpty()) {
+            event.setViews(0L);
+        } else {
+            event.setViews((long) views.size());
+        }
+        log.info("Views was updated, views= {}", event.getViews());
     }
 }
 
