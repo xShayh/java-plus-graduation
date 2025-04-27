@@ -23,6 +23,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<modules>
+		<module>main-service</module>
+		<module>stat-service</module>
+	</modules>
 	<dependencies>
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -33,6 +37,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>42.7.4</version>
 		</dependency>
 
 		<dependency>
@@ -46,10 +51,6 @@
 		</dependency>
 	</dependencies>
 
-	<modules>
-		<module>main-service</module>
-		<module>stat-service</module>
-	</modules>
 
 
 	<build>

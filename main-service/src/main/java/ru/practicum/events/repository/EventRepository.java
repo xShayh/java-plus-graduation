@@ -47,4 +47,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                                  Pageable pageable);
 
     Optional<Event> findByCategory(Category category);
+
+    List<Event> findAllByIdIn(List<Integer> ids);
 }

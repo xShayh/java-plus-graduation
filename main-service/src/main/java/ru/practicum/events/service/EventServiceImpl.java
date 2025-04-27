@@ -1,13 +1,17 @@
 package ru.practicum.events.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.categories.repository.CategoryRepository;
 import ru.practicum.categories.model.Category;
+import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.events.dto.*;
 import ru.practicum.events.mapper.EventMapper;
 import ru.practicum.events.model.Event;
@@ -22,6 +26,7 @@ import ru.practicum.exceptions.EventDateValidationException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+import stat.StatClient;
 
 import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
@@ -39,6 +44,9 @@ public class EventServiceImpl implements EventService {
     private final LocationRepository locationRepository;
     private final CategoryRepository categoryRepository;
     private final EventMapper eventMapper;
+    private final StatClient statClient;
+    private static final String START = "2025-01-01 00:00:00";
+    private static final String END = "2025-12-31 23:59:59";
 
     @Override
     public List<EventFullDto> adminGetEvents(EventAdminParams eventParams) {
@@ -250,6 +258,10 @@ public class EventServiceImpl implements EventService {
                         .toList();
             };
         }
+        log.info("Вызов метода по добавлению просмотров");
+        for (Event event : events) {
+            addViews("/events/" + event.getId(), event);
+        }
         return events.stream()
                 .map(eventMapper::toEventShortDto)
                 .toList();
@@ -262,6 +274,27 @@ public class EventServiceImpl implements EventService {
         if (event.getState() != EventState.PUBLISHED) {
             throw new NotFoundException(String.format("Event with ID=%d was not published", eventId));
         }
+        log.info("Вызов метода по добавлению просмотров");
+        addViews("/events/" + event.getId(), event);
         return eventMapper.toEventFullDto(event);
     }
+
+
+    private void addViews(String uri, Event event) {
+        ResponseEntity<Object> response = statClient.getStats(START, END, List.of(uri), false);
+        ObjectMapper mapper = new ObjectMapper();
+        List<ViewStatsDto> views = mapper.convertValue(response.getBody(), new TypeReference<List<ViewStatsDto>>() {
+        });
+        if (views.isEmpty()) {
+            event.setViews(0L);
+        } else {
+            event.setViews((long) views.size());
+        }
+        log.info("Views was updated, views= {}", event.getViews());
+    }
 }
+
+
+
+
+
