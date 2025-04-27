@@ -31,6 +31,7 @@ public class StatsService {
             throw new EventDateValidationException("Start date should be before end");
         }
 
+
         return unique
                 ? statsRepository.getUniqueStats(startTime, endTime, uris)
                 : statsRepository.getStats(startTime, endTime, uris);
