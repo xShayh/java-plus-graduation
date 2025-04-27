@@ -35,14 +35,14 @@ CREATE TABLE IF NOT EXISTS events (
 );
 
 -- чтобы не падало при повторном запуске - надо чистить таблицы в БД или закомментить строку
-CREATE TYPE request_status AS ENUM ('PENDING', 'CONFIRMED', 'REJECTED', 'CANCELED');
+--CREATE TYPE request_status AS ENUM ('PENDING', 'CONFIRMED', 'REJECTED', 'CANCELED');
 
 CREATE TABLE IF NOT EXISTS requests (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     created TIMESTAMP,
     event_id BIGINT,
     requester_id BIGINT,
-    status request_status,
+    status varchar(25) NOT NULL,
 
     CONSTRAINT fk_event_id FOREIGN KEY (event_id) REFERENCES events(id),
     CONSTRAINT fk_requester_id FOREIGN KEY (requester_id) REFERENCES users(id)
