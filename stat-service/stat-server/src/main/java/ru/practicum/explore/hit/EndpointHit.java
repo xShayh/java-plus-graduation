@@ -11,8 +11,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+
+import static org.springframework.http.HttpHeaders.DATE;
 
 @Entity
 @Table(name = "endpoint_hits")
@@ -35,6 +38,7 @@ public class EndpointHit {
     @Column(nullable = false)
     private String ip;
 
+    @DateTimeFormat(pattern = DATE)
     @Column(name = "tt", nullable = false)
     private LocalDateTime timestamp;
 }
