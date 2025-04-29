@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.categories.dto.CategoryDto;
-import ru.practicum.events.model.Location;
 import ru.practicum.events.util.EventState;
 import ru.practicum.user.dto.UserShortDto;
 
@@ -30,7 +29,7 @@ public class EventFullDto {
     private Long views;
     private LocalDateTime createdOn;
     private String description;
-    private Location location;
+    private LocationDto location;
     private Long participantLimit;
     private LocalDateTime publishedOn;
     private Boolean requestModeration;

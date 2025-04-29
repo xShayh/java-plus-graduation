@@ -14,6 +14,7 @@ import ru.practicum.categories.model.Category;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.events.dto.*;
 import ru.practicum.events.mapper.EventMapper;
+import ru.practicum.events.mapper.LocationMapper;
 import ru.practicum.events.model.Event;
 import ru.practicum.events.dto.EventAdminParams;
 import ru.practicum.events.dto.EventPublicParam;
@@ -42,6 +43,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
+    private final LocationMapper locationMapper;
     private final CategoryRepository categoryRepository;
     private final EventMapper eventMapper;
     private final StatClient statClient;
@@ -106,7 +108,7 @@ public class EventServiceImpl implements EventService {
             event.setEventDate(updateEventAdminRequest.getEventDate());
         }
         if (updateEventAdminRequest.getLocation() != null) {
-            event.setLocation(locationRepository.save(updateEventAdminRequest.getLocation()));
+            event.setLocation(locationRepository.save(locationMapper.toLocation(updateEventAdminRequest.getLocation())));
         }
         if (updateEventAdminRequest.getPaid() != null) {
             event.setPaid(updateEventAdminRequest.getPaid());
@@ -146,7 +148,7 @@ public class EventServiceImpl implements EventService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
         Event event = eventMapper.toEvent(newEventDto, category, user);
-        event.setLocation(locationRepository.save(newEventDto.getLocation()));
+        event.setLocation(locationRepository.save(locationMapper.toLocation(newEventDto.getLocation())));
         if (newEventDto.getPaid() == null) {
             event.setPaid(false);
         }
@@ -193,7 +195,7 @@ public class EventServiceImpl implements EventService {
             event.setEventDate(updateEventUserDto.getEventDate());
         }
         if (updateEventUserDto.getLocation() != null) {
-            event.setLocation(updateEventUserDto.getLocation());
+            event.setLocation(locationMapper.toLocation(updateEventUserDto.getLocation()));
         }
         if (updateEventUserDto.getPaid() != null) {
             event.setPaid(updateEventUserDto.getPaid());

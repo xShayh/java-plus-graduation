@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.events.model.Location;
 
 import java.time.LocalDateTime;
 
@@ -32,7 +31,7 @@ public class NewEventDto {
     private LocalDateTime eventDate;
 
     @NotNull
-    private Location location;
+    private LocationDto location;
 
     private Boolean paid;
 

@@ -20,6 +20,7 @@ import java.util.List;
 public class EventMapper {
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
+    private final LocationMapper locationMapper;
 
     public EventFullDto toEventFullDto(Event event) {
         return EventFullDto.builder()
@@ -34,7 +35,7 @@ public class EventMapper {
                 .views(event.getViews())
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())
-                .location(event.getLocation())
+                .location(locationMapper.toLocationDto(event.getLocation()))
                 .participantLimit(event.getParticipantLimit())
                 .publishedOn(event.getPublishedOn())
                 .requestModeration(event.getRequestModeration())
@@ -51,7 +52,7 @@ public class EventMapper {
                 newEventDto.getDescription(),
                 newEventDto.getEventDate(),
                 initiator,
-                newEventDto.getLocation(),
+                locationMapper.toLocation(newEventDto.getLocation()),
                 newEventDto.getPaid(),
                 newEventDto.getParticipantLimit(),
                 null,
