@@ -33,6 +33,7 @@ import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -93,35 +94,20 @@ public class EventServiceImpl implements EventService {
                 event.setState(EventState.CANCELED);
             }
         }
-        if (updateEventAdminRequest.getAnnotation() != null) {
-            event.setAnnotation(updateEventAdminRequest.getAnnotation());
-        }
+        Optional.ofNullable(updateEventAdminRequest.getAnnotation()).ifPresent(event::setAnnotation);
         if (updateEventAdminRequest.getCategory() != null) {
-            Category category = categoryRepository.findById(updateEventAdminRequest.getCategory())
-                    .orElseThrow(() -> new NotFoundException(String.format("Category with ID=%d was not found", updateEventAdminRequest.getCategory())));
+            Category category = getCategory(updateEventAdminRequest.getCategory());
             event.setCategory(category);
         }
-        if (updateEventAdminRequest.getDescription() != null) {
-            event.setDescription(updateEventAdminRequest.getDescription());
-        }
-        if (updateEventAdminRequest.getEventDate() != null) {
-            event.setEventDate(updateEventAdminRequest.getEventDate());
-        }
+        Optional.ofNullable(updateEventAdminRequest.getDescription()).ifPresent(event::setDescription);
+        Optional.ofNullable(updateEventAdminRequest.getEventDate()).ifPresent(event::setEventDate);
         if (updateEventAdminRequest.getLocation() != null) {
             event.setLocation(locationRepository.save(locationMapper.toLocation(updateEventAdminRequest.getLocation())));
         }
-        if (updateEventAdminRequest.getPaid() != null) {
-            event.setPaid(updateEventAdminRequest.getPaid());
-        }
-        if (updateEventAdminRequest.getParticipantLimit() != null) {
-            event.setParticipantLimit(updateEventAdminRequest.getParticipantLimit());
-        }
-        if (updateEventAdminRequest.getRequestModeration() != null) {
-            event.setRequestModeration(updateEventAdminRequest.getRequestModeration());
-        }
-        if (updateEventAdminRequest.getTitle() != null) {
-            event.setTitle(updateEventAdminRequest.getTitle());
-        }
+        Optional.ofNullable(updateEventAdminRequest.getPaid()).ifPresent(event::setPaid);
+        Optional.ofNullable(updateEventAdminRequest.getParticipantLimit()).ifPresent(event::setParticipantLimit);
+        Optional.ofNullable(updateEventAdminRequest.getRequestModeration()).ifPresent(event::setRequestModeration);
+        Optional.ofNullable(updateEventAdminRequest.getTitle()).ifPresent(event::setTitle);
         log.info("Event with ID={} was updated", eventId);
         return eventMapper.toEventFullDto(eventRepository.save(event));
     }
@@ -133,7 +119,6 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findAllByInitiatorId(userId, pageable).stream()
                 .map(eventMapper::toEventShortDto)
                 .toList();
-
     }
 
     @Override
@@ -143,10 +128,8 @@ public class EventServiceImpl implements EventService {
                 .isAfter(LocalDateTime.now().plusHours(2))) {
             throw new EventDateValidationException("Event date should be in 2+ hours after now");
         }
-        Category category = categoryRepository.findById(newEventDto.getCategory())
-                .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found", newEventDto.getCategory())));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
+        Category category = getCategory(newEventDto.getCategory());
+        User user = getUser(userId);
         Event event = eventMapper.toEvent(newEventDto, category, user);
         event.setLocation(locationRepository.save(locationMapper.toLocation(newEventDto.getLocation())));
         if (newEventDto.getPaid() == null) {
@@ -177,39 +160,24 @@ public class EventServiceImpl implements EventService {
         if (event.getPublishedOn() != null) {
             throw new InvalidParameterException("Event is already published");
         }
-        if (updateEventUserDto.getEventDate() != null && !updateEventUserDto.getEventDate().isAfter(LocalDateTime.now().plusHours(2))) {
+        if (updateEventUserDto.getEventDate() != null && !updateEventUserDto.getEventDate()
+                .isAfter(LocalDateTime.now().plusHours(2))) {
             throw new EventDateValidationException("Event date should be in 2+ hours after now");
         }
-        if (updateEventUserDto.getAnnotation() != null) {
-            event.setAnnotation(updateEventUserDto.getAnnotation());
-        }
+        Optional.ofNullable(updateEventUserDto.getAnnotation()).ifPresent(event::setAnnotation);
         if (updateEventUserDto.getCategory() != null) {
-            Category category = categoryRepository.findById(updateEventUserDto.getCategory())
-                    .orElseThrow(() -> new NotFoundException(String.format("Category with ID=%d was not found", updateEventUserDto.getCategory())));
+            Category category = getCategory(updateEventUserDto.getCategory());
             event.setCategory(category);
         }
-        if (updateEventUserDto.getDescription() != null) {
-            event.setDescription(updateEventUserDto.getDescription());
-        }
-        if (updateEventUserDto.getEventDate() != null) {
-            event.setEventDate(updateEventUserDto.getEventDate());
-        }
+        Optional.ofNullable(updateEventUserDto.getDescription()).ifPresent(event::setDescription);
+        Optional.ofNullable(updateEventUserDto.getEventDate()).ifPresent(event::setEventDate);
         if (updateEventUserDto.getLocation() != null) {
             event.setLocation(locationMapper.toLocation(updateEventUserDto.getLocation()));
         }
-        if (updateEventUserDto.getPaid() != null) {
-            event.setPaid(updateEventUserDto.getPaid());
-        }
-        if (updateEventUserDto.getParticipantLimit() != null) {
-            event.setParticipantLimit(updateEventUserDto.getParticipantLimit());
-        }
-        if (updateEventUserDto.getRequestModeration() != null) {
-            event.setRequestModeration(updateEventUserDto.getRequestModeration());
-        }
-        if (updateEventUserDto.getTitle() != null) {
-            event.setTitle(updateEventUserDto.getTitle());
-        }
-
+        Optional.ofNullable(updateEventUserDto.getPaid()).ifPresent(event::setPaid);
+        Optional.ofNullable(updateEventUserDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
+        Optional.ofNullable(updateEventUserDto.getRequestModeration()).ifPresent(event::setRequestModeration);
+        Optional.ofNullable(updateEventUserDto.getTitle()).ifPresent(event::setTitle);
         if (updateEventUserDto.getStateAction() != null) {
             if (updateEventUserDto.getStateAction().equals(StateActionForUser.SEND_TO_REVIEW)) {
                 event.setState(EventState.PENDING);
@@ -281,7 +249,6 @@ public class EventServiceImpl implements EventService {
         return eventMapper.toEventFullDto(event);
     }
 
-
     private void addViews(String uri, Event event) {
         ResponseEntity<Object> response = statClient.getStats(START, END, List.of(uri), false);
         ObjectMapper mapper = new ObjectMapper();
@@ -293,6 +260,16 @@ public class EventServiceImpl implements EventService {
             event.setViews((long) views.size());
         }
         log.info("Views was updated, views= {}", event.getViews());
+    }
+
+    private Category getCategory(Integer categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException(String.format("Category with ID=%d was not found", categoryId)));
+    }
+
+    private User getUser(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
     }
 }
 
