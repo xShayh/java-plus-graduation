@@ -71,9 +71,15 @@ public class EventPrivateController {
     }
 
     @DeleteMapping("/{eventId}/like")
+    @ResponseStatus(HttpStatus.GONE)
     public Long removeLike(@PathVariable(name = "eventId") Integer eventId,
                            @PathVariable(name = "userId") Integer userId) {
         return eventService.removeLike(userId, eventId);
+    }
+
+    @GetMapping("/like")
+    public List<EventShortDto> getAllLikedEvents(@PathVariable Integer userId) {
+        return eventService.getAllLikedEvents(userId);
     }
 }
 

@@ -283,6 +283,32 @@ public class EventServiceImpl implements EventService {
         return likes.stream().map(like -> userMapper.toUserShortDto(like.getUser())).toList();
     }
 
+    @Override
+    public List<EventFullDto> adminGetEventsLikedByUser(Integer userId) {
+        List<Integer> eventIds = getEventIdsLikedByUser(userId);
+        return eventMapper.toEventFullDto(eventRepository.findAllById(eventIds));
+    }
+
+    @Override
+    public List<EventShortDto> getAllLikedEvents(Integer userId) {
+        List<Integer> eventIds = getEventIdsLikedByUser(userId);
+        return eventRepository.findAllById(eventIds).stream()
+                .map(eventMapper::toEventShortDto)
+                .toList();
+    }
+
+    private List<Integer> getEventIdsLikedByUser(Integer userId) {
+        User user = getUser(userId);
+        List<Like> likes = likeRepository.findAllByUserId(userId);
+        if (likes.isEmpty()) {
+            throw new NotFoundException(String.format("User with id=%d did not like any events", userId));
+        }
+        return likes.stream()
+                .map(Like::getEvent)
+                .map(Event::getId)
+                .toList();
+    }
+
     private void addViews(String uri, Event event) {
         ResponseEntity<Object> response = statClient.getStats(START, END, List.of(uri), false);
         ObjectMapper mapper = new ObjectMapper();
