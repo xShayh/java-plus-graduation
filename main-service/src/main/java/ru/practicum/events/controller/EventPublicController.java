@@ -51,11 +51,13 @@ public class EventPublicController {
         saveHit(request);
         return ResponseEntity.ok().body(eventService.publicGetEvent(eventId));
     }
+
     @GetMapping("/{eventId}/likes")
     public List<UserShortDto> publicGetLikedUsers(@PathVariable("eventId") Integer eventId, HttpServletRequest request) {
         saveHit(request);
         return eventService.getLikedUsers(eventId);
     }
+
     private void saveHit(HttpServletRequest request) {
         EndpointHitDto hitDto = new EndpointHitDto();
         hitDto.setApp("main-service");
