@@ -67,3 +67,9 @@ CREATE TABLE IF NOT EXISTS compilation_events (
    CONSTRAINT fk_compilation FOREIGN KEY (compilation_id) REFERENCES compilations(id) ON DELETE CASCADE,
    CONSTRAINT fk_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS likes (
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    event_id INTEGER REFERENCES events(id) ON DELETE CASCADE NOT NULL,
+    PRIMARY KEY (user_id, event_id)
+);
