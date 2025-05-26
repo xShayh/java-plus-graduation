@@ -53,9 +53,9 @@ public class EventPublicController {
     }
 
     @GetMapping("/{eventId}/likes")
-    public List<UserShortDto> publicGetLikedUsers(@PathVariable("eventId") Integer eventId, HttpServletRequest request) {
+    public ResponseEntity<List<UserShortDto>> publicGetLikedUsers(@PathVariable("eventId") Integer eventId, HttpServletRequest request) {
         saveHit(request);
-        return eventService.getLikedUsers(eventId);
+        return ResponseEntity.ok(eventService.getLikedUsers(eventId));
     }
 
     private void saveHit(HttpServletRequest request) {

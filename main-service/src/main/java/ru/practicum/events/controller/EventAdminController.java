@@ -43,7 +43,7 @@ public class EventAdminController {
     }
 
     @GetMapping("/{userId}/like")
-    public List<EventFullDto> adminGetEventsLikedByUser(@PathVariable("userId") Integer userId) {
-        return eventService.adminGetEventsLikedByUser(userId);
+    public ResponseEntity<List<EventFullDto>> adminGetEventsLikedByUser(@PathVariable("userId") Integer userId) {
+        return ResponseEntity.ok().body(eventService.adminGetEventsLikedByUser(userId));
     }
 }
