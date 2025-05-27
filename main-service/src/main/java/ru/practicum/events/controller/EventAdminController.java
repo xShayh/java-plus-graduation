@@ -41,4 +41,9 @@ public class EventAdminController {
                                                           @Valid @RequestBody UpdateEventAdminRequest updateAdminEvent) {
         return ResponseEntity.ok().body(eventService.updateAdminEvent(eventId, updateAdminEvent));
     }
+
+    @GetMapping("/{userId}/like")
+    public ResponseEntity<List<EventFullDto>> adminGetEventsLikedByUser(@PathVariable("userId") Integer userId) {
+        return ResponseEntity.ok().body(eventService.adminGetEventsLikedByUser(userId));
+    }
 }

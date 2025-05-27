@@ -18,13 +18,17 @@ import ru.practicum.events.mapper.LocationMapper;
 import ru.practicum.events.model.Event;
 import ru.practicum.events.dto.EventAdminParams;
 import ru.practicum.events.dto.EventPublicParam;
+import ru.practicum.events.model.Like;
 import ru.practicum.events.repository.EventRepository;
+import ru.practicum.events.repository.LikeRepository;
 import ru.practicum.events.repository.LocationRepository;
 import ru.practicum.events.util.AdminEventState;
 import ru.practicum.events.util.EventState;
 import ru.practicum.events.util.StateActionForUser;
 import ru.practicum.exceptions.EventDateValidationException;
 import ru.practicum.exceptions.NotFoundException;
+import ru.practicum.user.dto.UserShortDto;
+import ru.practicum.user.mapper.UserMapper;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 import stat.StatClient;
@@ -43,6 +47,8 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final LikeRepository likeRepository;
     private final LocationRepository locationRepository;
     private final LocationMapper locationMapper;
     private final CategoryRepository categoryRepository;
@@ -249,6 +255,60 @@ public class EventServiceImpl implements EventService {
         return eventMapper.toEventFullDto(event);
     }
 
+    @Override
+    public Long addLike(Integer userId, Integer eventId) {
+        User user = getUser(userId);
+        Event event = getEvent(eventId);
+
+        if (!likeRepository.existsByUserIdAndEventId(userId, eventId)) {
+            Like like = new Like(user, event);
+            likeRepository.save(like);
+        }
+        return likeRepository.countByEventId(eventId);
+    }
+
+    @Override
+    public Long removeLike(Integer userId, Integer eventId) {
+        if (likeRepository.existsByUserIdAndEventId(userId, eventId)) {
+            likeRepository.deleteByUserIdAndEventId(userId, eventId);
+        }
+        return likeRepository.countByEventId(eventId);
+    }
+
+    @Override
+    public List<UserShortDto> getLikedUsers(Integer eventId) {
+        Event event = getEvent(eventId);
+        addViews("/events/" + event.getId(), event);
+        List<Like> likes = likeRepository.findAllByEventId(eventId);
+        return likes.stream().map(like -> userMapper.toUserShortDto(like.getUser())).toList();
+    }
+
+    @Override
+    public List<EventFullDto> adminGetEventsLikedByUser(Integer userId) {
+        List<Integer> eventIds = getEventIdsLikedByUser(userId);
+        return eventMapper.toEventFullDto(eventRepository.findAllById(eventIds));
+    }
+
+    @Override
+    public List<EventShortDto> getAllLikedEvents(Integer userId) {
+        List<Integer> eventIds = getEventIdsLikedByUser(userId);
+        return eventRepository.findAllById(eventIds).stream()
+                .map(eventMapper::toEventShortDto)
+                .toList();
+    }
+
+    private List<Integer> getEventIdsLikedByUser(Integer userId) {
+        User user = getUser(userId);
+        List<Like> likes = likeRepository.findAllByUserId(userId);
+        if (likes.isEmpty()) {
+            throw new NotFoundException(String.format("User with id=%d did not like any events", userId));
+        }
+        return likes.stream()
+                .map(Like::getEvent)
+                .map(Event::getId)
+                .toList();
+    }
+
     private void addViews(String uri, Event event) {
         ResponseEntity<Object> response = statClient.getStats(START, END, List.of(uri), false);
         ObjectMapper mapper = new ObjectMapper();
@@ -270,6 +330,16 @@ public class EventServiceImpl implements EventService {
     private User getUser(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
+    }
+
+    private Event getEvent(Integer eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
+
+        if (event.getState() != EventState.PUBLISHED) {
+            throw new NotFoundException(String.format("Event with id=%d was not published", eventId));
+        }
+        return event;
     }
 }
 

@@ -12,6 +12,7 @@ import ru.practicum.events.dto.EventShortDto;
 import ru.practicum.events.dto.EventPublicParam;
 import ru.practicum.events.service.EventService;
 import ru.practicum.events.util.SortState;
+import ru.practicum.user.dto.UserShortDto;
 import stat.StatClient;
 
 import java.time.LocalDateTime;
@@ -49,6 +50,12 @@ public class EventPublicController {
     public ResponseEntity<EventFullDto> publicGetEvent(@PathVariable Integer eventId, HttpServletRequest request) {
         saveHit(request);
         return ResponseEntity.ok().body(eventService.publicGetEvent(eventId));
+    }
+
+    @GetMapping("/{eventId}/likes")
+    public ResponseEntity<List<UserShortDto>> publicGetLikedUsers(@PathVariable("eventId") Integer eventId, HttpServletRequest request) {
+        saveHit(request);
+        return ResponseEntity.ok(eventService.getLikedUsers(eventId));
     }
 
     private void saveHit(HttpServletRequest request) {
