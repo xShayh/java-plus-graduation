@@ -15,9 +15,6 @@
 		<module>infra</module>
 		<module>core/main-service</module>
 		<module>stat-service</module>
-		<module>infra/config-server</module>
-		<module>infra/discovery-server</module>
-		<module>infra/gateway-server</module>
 		<module>core</module>
 	</modules>
 
