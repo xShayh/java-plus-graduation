@@ -29,7 +29,7 @@ logging:
 
 discovery:
   services:
-    stats-server-id: stat-server
+    stats-server-id: STATS-SERVER
 
 server:
   port: 0
