@@ -50,31 +50,41 @@ public class StatClient extends BaseClient {
     }
 
     public ResponseEntity<Object> saveHit(EndpointHitDto hitDto) {
-        return post("/hit", hitDto);
+        URI uri = makeUri("/hit");
+        return rest.postForEntity(uri, hitDto, Object.class);
     }
 
     public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
         log.info("Start building request for getStats()");
         log.info("Input parameters - Start: {}, End: {}, URIs: {}, Unique: {}", start, end, uris, unique);
+
         if (start == null || start.trim().isEmpty()) {
             log.info("Start date is null or empty!");
             throw new IllegalArgumentException("Start date cannot be null or empty");
         }
+
         if (end == null || end.trim().isEmpty()) {
             log.info("End date is null or empty!");
             throw new IllegalArgumentException("End date cannot be null or empty");
         }
+
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/stats")
                 .queryParam("start", start)
                 .queryParam("end", end)
                 .queryParam("unique", unique);
+
         if (uris != null && !uris.isEmpty()) {
             uriBuilder.queryParam("uris", String.join(",", uris));
             log.info("Uris added to the path: {}", uris);
         }
-        log.info("Final request URI: {}", uriBuilder.toUriString());
+
+        String pathWithParams = uriBuilder.toUriString();
+        URI fullUri = makeUri(pathWithParams);
+
+        log.info("Final full URI: {}", fullUri);
+
         try {
-            ResponseEntity<Object> response = get(uriBuilder.toUriString(), new HashMap<>());
+            ResponseEntity<Object> response = rest.getForEntity(fullUri, Object.class);
             log.info("Response received: {}", response);
             return response;
         } catch (Exception e) {
