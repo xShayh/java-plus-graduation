@@ -14,6 +14,7 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriComponentsBuilder;
+import ru.practicum.dto.EndpointHitDto;
 
 import java.net.URI;
 import java.util.*;
@@ -46,6 +47,10 @@ public class StatClient extends BaseClient {
         MaxAttemptsRetryPolicy retryPolicy = new MaxAttemptsRetryPolicy();
         retryPolicy.setMaxAttempts(3);
         this.retryTemplate.setRetryPolicy(retryPolicy);
+    }
+
+    public ResponseEntity<Object> saveHit(EndpointHitDto hitDto) {
+        return post("/hit", hitDto);
     }
 
     public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
