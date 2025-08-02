@@ -63,8 +63,8 @@ services:
       retries: 10
 
   stats-server:
-    build: ./stats-service/stats-server
-    image: stats-server
+    build: ./stat-service/stat-server
+    image: stat-server
     container_name: ewm-stats-server
     ports:
       - "9090:9090"
