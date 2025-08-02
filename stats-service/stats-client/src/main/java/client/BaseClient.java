@@ -1,10 +1,8 @@
 package client;
 
 import lombok.AllArgsConstructor;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
