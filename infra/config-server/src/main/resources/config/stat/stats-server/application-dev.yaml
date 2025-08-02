@@ -33,7 +33,7 @@ logging:
 
 discovery:
   services:
-    stats-server-id: stat-server
+    stats-server-id: stats-server
 
 server:
   port: 9090
