@@ -93,8 +93,6 @@ services:
   event-service:
     build: core/event-service
     container_name: ewm-event-service
-    ports:
-      - "8080:8080"
     depends_on:
       event-db:
         condition: service_healthy
@@ -105,7 +103,7 @@ services:
     networks:
       - ewm-net
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://event-db:5432/event-main
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://event-db:5432/ewm_event
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
