@@ -67,10 +67,6 @@
             <artifactId>querydsl-jpa</artifactId>
             <classifier>jakarta</classifier>
         </dependency>
-        <dependency>
-        <groupId>com.querydsl</groupId>
-        <artifactId>querydsl-apt</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
