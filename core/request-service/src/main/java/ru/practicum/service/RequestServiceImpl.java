@@ -8,10 +8,7 @@ import ru.practicum.client.EventClient;
 import ru.practicum.client.UserClient;
 import ru.practicum.dto.events.EventFullDto;
 import ru.practicum.dto.events.EventState;
-import ru.practicum.dto.request.EventRequestStatusUpdateRequest;
-import ru.practicum.dto.request.EventRequestStatusUpdateResult;
-import ru.practicum.dto.request.RequestDto;
-import ru.practicum.dto.request.RequestStatus;
+import ru.practicum.dto.request.*;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.exceptions.InvalidDataException;
 import ru.practicum.exceptions.NotFoundException;
@@ -30,8 +27,8 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
-
     private final RequestRepository requestRepository;
+    private final RequestMapper requestMapper;
     private final UserClient userClient;
     private final EventClient eventClient;
 
@@ -40,7 +37,7 @@ public class RequestServiceImpl implements RequestService {
     public List<RequestDto> getRequests(Long userId) {
         userClient.getById(userId);
         List<Request> requests = requestRepository.findAllByRequesterId(userId);
-        return RequestMapper.INSTANCE.mapListRequests(requests);
+        return RequestMapper.INSTANCE.toParticipationRequestDto(requests);
     }
 
     @Override
@@ -178,5 +175,47 @@ public class RequestServiceImpl implements RequestService {
     private Request getRequestById(Long requestId) {
         return requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Запроса с id " + requestId + " не существует"));
+    }
+
+    @Override
+    public List<ParticipationRequestDto> findAllByEventIdAndStatus(Long eventId, RequestStatus status) {
+        return requestRepository.findAllByEventIdAndStatus(eventId, status)
+                .stream()
+                .map(requestMapper::toParticipationRequestDto)
+                .toList();
+    }
+
+    @Override
+    public List<ParticipationRequestDto> getByIds(List<Long> ids) {
+        return requestRepository.findAllById(ids)
+                .stream()
+                .map(requestMapper::toParticipationRequestDto)
+                .toList();
+    }
+
+    @Override
+    public List<RequestCountDto> getConfirmedCount(List<Long> ids) {
+        return requestRepository.getParticipationRequestCountConfirmed(ids)
+                .stream()
+                .map(requestMapper::toParticipationRequestDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public List<ParticipationRequestDto> updateStatus(RequestStatus status, List<Long> ids) {
+        List<Request> requests = requestRepository.findAllById(ids);
+
+        if (status == RequestStatus.REJECTED &&
+                requests.stream().anyMatch(request -> request.getStatus() == RequestStatus.CONFIRMED)) {
+            throw new InvalidDataException("Среди заявок уже есть подтвержденные");
+        }
+
+        requests.forEach(request -> request.setStatus(status));
+        List<Request> updatedRequests = requestRepository.saveAll(requests);
+        return updatedRequests
+                .stream()
+                .map(requestMapper::toParticipationRequestDto)
+                .toList();
     }
 }

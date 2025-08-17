@@ -3,6 +3,7 @@ package ru.practicum.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.request.ParticipationRequestDto;
+import ru.practicum.dto.request.RequestCountDto;
 import ru.practicum.dto.request.RequestStatus;
 
 
@@ -21,4 +22,7 @@ public interface RequestClient {
     List<ParticipationRequestDto> updateStatus(
             @RequestParam(name = "status") RequestStatus status,
             @RequestBody List<Long> ids);
+
+    @GetMapping
+    List<RequestCountDto> getConfirmedCount(@RequestParam(name = "eventId") List<Long> ids);
 }
