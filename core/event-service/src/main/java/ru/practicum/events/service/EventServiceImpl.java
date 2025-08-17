@@ -279,7 +279,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Long removeLike(Long userId, Long eventId) {
         if (likeRepository.existsByIdUserIdAndIdEventId(userId, eventId)) {
-            likeRepository.deleteByUserIdAndEventId(userId, eventId);
+            likeRepository.deleteByIdUserIdAndIdEventId(userId, eventId);
         }
         return likeRepository.countByEventId(eventId);
     }
