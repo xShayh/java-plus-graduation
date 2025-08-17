@@ -17,6 +17,8 @@ public class Like {
     @EmbeddedId
     LikeId id;
 
+    Long userId;
+
     @ManyToOne
     @MapsId("eventId")
     @JoinColumn(name = "event_id")
@@ -25,5 +27,5 @@ public class Like {
     public Like(Long userId, Event event) {
         this.id = new LikeId(userId, event.getId());
         this.event = event;
-    }
+        this.userId = userId; }
 }
