@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +62,7 @@ public class EventServiceImpl implements EventService {
             eventParams.setRangeEnd(LocalDateTime.now().plusYears(1));
         }
 
-        List<Event> events = eventRepository.findAdminEvents(
+        Page<Event> events = eventRepository.findAdminEvents(
                 eventParams.getUsers(),
                 eventParams.getStates(),
                 eventParams.getCategories(),
@@ -218,7 +219,7 @@ public class EventServiceImpl implements EventService {
             throw new EventDateValidationException("End date should be before start date");
         }
 
-        List<Event> events = eventRepository.findPublicEvents(
+        Page<Event> events = eventRepository.findPublicEvents(
                 eventPublicParam.getText(),
                 eventPublicParam.getCategory(),
                 eventPublicParam.getPaid(),
