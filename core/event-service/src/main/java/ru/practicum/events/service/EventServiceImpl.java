@@ -310,7 +310,7 @@ public class EventServiceImpl implements EventService {
 
     private List<Long> getEventIdsLikedByUser(Long userId) {
         userClient.getById(userId);
-        List<Like> likes = likeRepository.findAllByUserId(userId);
+        List<Like> likes = likeRepository.findAllByIdUserId(userId);
         if (likes.isEmpty()) {
             throw new NotFoundException(String.format("User with id=%d did not like any events", userId));
         }

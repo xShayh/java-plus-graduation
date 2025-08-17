@@ -17,5 +17,5 @@ public interface LikeRepository extends JpaRepository<Like, LikeId> {
 
     List<Like> findAllByEventId(Long eventId);
 
-    List<Like> findAllByUserId(Long userId);
+    List<Like> findAllByIdUserId(Long userId);
 }
