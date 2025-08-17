@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.categories.model.Category;
 import ru.practicum.events.model.Event;
@@ -25,12 +26,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (:states IS NULL OR e.state IN :states) " +
             "AND (:categories IS NULL OR e.category.id IN :categories) " +
             "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd")
-    List<Event> findAdminEvents(List<Long> users,
-                                List<String> states,
-                                List<Long> categories,
-                                LocalDateTime rangeStart,
-                                LocalDateTime rangeEnd,
-                                Pageable page);
+    List<Event> findAdminEvents(@Param("users") List<Long> users,
+                                @Param("states") List<String> states,
+                                @Param("categories") List<Long> categories,
+                                @Param("rangeStart") LocalDateTime rangeStart,
+                                @Param("rangeEnd") LocalDateTime rangeEnd,
+                                Pageable pageable);
 
     @Query("SELECT e FROM Event e " +
             "WHERE (:text IS NULL OR (e.title ILIKE :text " +
@@ -40,12 +41,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (:paid IS NULL OR e.paid = :paid) " +
             "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
             "AND (:onlyAvailable IS NULL OR e.state = 'PUBLISHED')")
-    List<Event> findPublicEvents(String text,
-                                 List<Long> categories,
-                                 Boolean paid,
-                                 LocalDateTime rangeStart,
-                                 LocalDateTime rangeEnd,
-                                 Boolean onlyAvailable,
+    List<Event> findPublicEvents(@Param("text") String text,
+                                 @Param("categories") List<Long> categories,
+                                 @Param("paid") Boolean paid,
+                                 @Param("rangeStart") LocalDateTime rangeStart,
+                                 @Param("rangeEnd") LocalDateTime rangeEnd,
+                                 @Param("onlyAvailable") Boolean onlyAvailable,
                                  Pageable pageable);
 
     Optional<Event> findByCategory(Category category);
