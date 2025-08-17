@@ -39,7 +39,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class EventServiceImpl implements EventService {
-
     private final EventRepository eventRepository;
     private final LikeRepository likeRepository;
     private final LocationRepository locationRepository;
