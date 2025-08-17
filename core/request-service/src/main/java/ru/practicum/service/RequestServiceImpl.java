@@ -37,7 +37,7 @@ public class RequestServiceImpl implements RequestService {
     public List<RequestDto> getRequests(Long userId) {
         userClient.getById(userId);
         List<Request> requests = requestRepository.findAllByRequesterId(userId);
-        return RequestMapper.INSTANCE.toParticipationRequestDto(requests);
+        return requestMapper.toParticipationRequestDto(requests);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class RequestServiceImpl implements RequestService {
 
         request = requestRepository.save(request);
 
-        return RequestMapper.INSTANCE.mapToRequestDto(request);
+        return requestMapper.mapToRequestDto(request);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class RequestServiceImpl implements RequestService {
         request.setStatus(RequestStatus.CANCELED);
         requestRepository.save(request);
 
-        return RequestMapper.INSTANCE.mapToRequestDto(request);
+        return requestMapper.mapToRequestDto(request);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class RequestServiceImpl implements RequestService {
         userClient.getById(userId);
         List<Request> requests = requestRepository.findAllByRequesterIdAndEventId(userId, eventId);
         return requests.stream()
-                .map(RequestMapper.INSTANCE::mapToRequestDto)
+                .map(requestMapper::mapToRequestDto)
                 .collect(Collectors.toList());
     }
 
@@ -138,11 +138,11 @@ public class RequestServiceImpl implements RequestService {
 
         if (requestStatusUpdateRequest.getStatus() == RequestStatus.CONFIRMED) {
             result.setConfirmedRequests(requestsToUpdate.stream()
-                    .map(RequestMapper.INSTANCE::toParticipationRequestDto)
+                    .map(requestMapper::toParticipationRequestDto)
                     .collect(Collectors.toList()));
         } else if (requestStatusUpdateRequest.getStatus() == RequestStatus.REJECTED) {
             result.setRejectedRequests(requestsToUpdate.stream()
-                    .map(RequestMapper.INSTANCE::toParticipationRequestDto)
+                    .map(requestMapper::toParticipationRequestDto)
                     .collect(Collectors.toList()));
         }
 

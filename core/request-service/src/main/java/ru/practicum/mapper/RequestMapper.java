@@ -2,7 +2,7 @@ package ru.practicum.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 
 import ru.practicum.dto.request.ParticipationRequestDto;
 import ru.practicum.dto.request.RequestCountDto;
@@ -12,10 +12,8 @@ import ru.practicum.model.RequestCount;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface RequestMapper {
-    RequestMapper INSTANCE = Mappers.getMapper(RequestMapper.class);
-
     @Mapping(source = "eventId", target = "event")
     @Mapping(source = "requesterId", target = "requester")
     @Mapping(source = "created", target = "created", dateFormat = "yyyy-MM-dd HH:mm:ss")
