@@ -25,7 +25,9 @@ public interface RequestRepository extends JpaRepository<Request, Long>,
 
     List<Request> findAllByEventIdAndStatus(Long eventId, RequestStatus status);
 
-    @Query("SELECT new ru.practicum.ewm.model.ParticipationRequestCount(pr.eventId, count(pr.id)) " +
-            "FROM ParticipationRequest pr WHERE pr.eventId in :ids and status = 'CONFIRMED' GROUP BY pr.eventId")
+    @Query("SELECT new ru.practicum.model.RequestCount(r.eventId, count(r.id)) " +
+            "FROM Request r " +
+            "WHERE r.eventId in :ids AND r.status = 'CONFIRMED' " +
+            "GROUP BY r.eventId")
     List<RequestCount> getParticipationRequestCountConfirmed(@Param("ids") List<Long> ids);
 }
