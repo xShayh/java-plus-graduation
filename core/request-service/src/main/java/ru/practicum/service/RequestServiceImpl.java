@@ -39,7 +39,7 @@ public class RequestServiceImpl implements RequestService {
     @Transactional(readOnly = true)
     public List<RequestDto> getRequests(Long userId) {
         userClient.getById(userId);
-        List<Request> requests = requestRepository.findAllByRequester_Id(userId);
+        List<Request> requests = requestRepository.findAllByRequesterId(userId);
         return RequestMapper.INSTANCE.mapListRequests(requests);
     }
 
@@ -88,7 +88,7 @@ public class RequestServiceImpl implements RequestService {
     @Transactional(readOnly = true)
     public List<RequestDto> getRequestByUserOfEvent(Long userId, Long eventId) {
         userClient.getById(userId);
-        List<Request> requests = requestRepository.findAllByRequester_IdAndEvent_id(userId, eventId);
+        List<Request> requests = requestRepository.findAllByRequesterIdAndEventId(userId, eventId);
         return requests.stream()
                 .map(RequestMapper.INSTANCE::mapToRequestDto)
                 .collect(Collectors.toList());
@@ -107,7 +107,7 @@ public class RequestServiceImpl implements RequestService {
             return result;
         }
 
-        List<Request> allForEvent = requestRepository.findAllByEvent_id(eventId);
+        List<Request> allForEvent = requestRepository.findAllByEventId(eventId);
 
         Set<Long> idsToUpdate = requestStatusUpdateRequest.getRequestIds().stream().collect(Collectors.toSet());
         List<Request> requestsToUpdate = allForEvent.stream()
@@ -121,7 +121,7 @@ public class RequestServiceImpl implements RequestService {
             throw new InvalidParameterException("Request already confirmed");
         }
 
-        long alreadyConfirmed = requestRepository.findAllByEvent_id(eventId).stream()
+        long alreadyConfirmed = requestRepository.findAllByEventId(eventId).stream()
                 .filter(r -> RequestStatus.CONFIRMED.equals(r.getStatus()))
                 .count();
 
@@ -153,7 +153,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private void checkRequest(Long requesterId, EventFullDto event) {
-        if (requestRepository.existsByRequesterAndEvent(requesterId, event.getId())) {
+        if (requestRepository.existsByRequesterIdAndEventId(requesterId, event.getId())) {
             throw new InvalidParameterException("Нельзя создать повторный запрос");
         }
 
@@ -166,7 +166,7 @@ public class RequestServiceImpl implements RequestService {
             throw new InvalidParameterException("Нельзя участвовать в неопубликованных событиях");
         }
 
-        long confirmedCount = requestRepository.findAllByEvent_id(event.getId()).stream()
+        long confirmedCount = requestRepository.findAllByEventId(event.getId()).stream()
                 .filter(r -> RequestStatus.CONFIRMED.equals(r.getStatus()))
                 .count();
 

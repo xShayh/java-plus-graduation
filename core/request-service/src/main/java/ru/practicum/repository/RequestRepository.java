@@ -9,14 +9,14 @@ import java.util.List;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
-    List<Request> findAllByEvent_id(Long eventId);
+    List<Request> findAllByEventId(Long eventId);
 
-    List<Request> findAllByRequester_Id(Long userId);
+    List<Request> findAllByRequesterId(Long userId);
 
     @Query("SELECT r FROM Request r " +
             "JOIN r.event e " +
             "WHERE e.id = :eventId AND e.initiator.id = :userId")
-    List<Request> findAllByRequester_IdAndEvent_id(Long userId, Long eventId);
+    List<Request> findAllByRequesterIdAndEventId(Long userId, Long eventId);
 
-    Boolean existsByRequesterAndEvent(Long requesterId, Long eventId);
+    Boolean existsByRequesterIdAndEventId(Long requesterId, Long eventId);
 }
