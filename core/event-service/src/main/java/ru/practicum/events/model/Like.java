@@ -13,10 +13,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Like {
+
     @EmbeddedId
     LikeId id;
-
-    Long userId;
 
     @ManyToOne
     @MapsId("eventId")
@@ -26,6 +25,5 @@ public class Like {
     public Like(Long userId, Event event) {
         this.id = new LikeId(userId, event.getId());
         this.event = event;
-        this.userId = userId;
     }
 }
