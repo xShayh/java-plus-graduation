@@ -8,7 +8,6 @@ import java.util.List;
 
 @FeignClient(name = "user-service", path = "/internal/api/users")
 public interface UserClient {
-
     @GetMapping("/{userId}")
     UserShortDto getById(@PathVariable  Long userId);
 
