@@ -333,7 +333,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException(String.format("Category with ID=%d was not found", categoryId)));
     }
 
-    private Event getEvent(Long eventId) {
+    public Event getEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
 
@@ -341,5 +341,18 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException(String.format("Event with id=%d was not published", eventId));
         }
         return event;
+    }
+
+    @Override
+    public List<EventFullDto> getByLocation(Long locationId) {
+        return eventRepository.findAllByLocationId(locationId).stream()
+                .map(eventMapper::toEventFullDto)
+                .toList();
+    }
+
+    @Override
+    public EventFullDto getEventById(Long eventId) {
+        Event event = getEvent(eventId);
+        return eventMapper.toEventFullDto(event);
     }
 }

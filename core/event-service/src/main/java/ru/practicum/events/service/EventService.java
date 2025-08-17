@@ -3,6 +3,7 @@ package ru.practicum.events.service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.events.*;
 import ru.practicum.dto.user.UserShortDto;
+import ru.practicum.events.model.Event;
 
 import java.util.List;
 
@@ -39,4 +40,10 @@ public interface EventService {
     List<EventFullDto> adminGetEventsLikedByUser(Long userId);
 
     List<EventShortDto> getAllLikedEvents(Long userId);
+
+    List<EventFullDto> getByLocation(Long locationId);
+
+    Event getEvent(Long eventId);
+
+    EventFullDto getEventById(Long eventId);
 }

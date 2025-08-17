@@ -19,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class EventAdminController {
-
     private final EventService eventService;
 
     @GetMapping
