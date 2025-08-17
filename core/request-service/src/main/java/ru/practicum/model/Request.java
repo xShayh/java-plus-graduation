@@ -22,9 +22,11 @@ public class Request {
 
     private LocalDateTime created;
 
+    @Column(name = "event_id")
     private Long eventId;
 
-    Long requesterId;
+    @Column(name = "requester_id")
+    private Long requesterId;
 
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
