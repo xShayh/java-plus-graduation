@@ -118,6 +118,7 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(updateEventAdminRequest.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         Optional.ofNullable(updateEventAdminRequest.getRequestModeration()).ifPresent(event::setRequestModeration);
         Optional.ofNullable(updateEventAdminRequest.getTitle()).ifPresent(event::setTitle);
+        Optional.ofNullable(updateEventAdminRequest.getInitiator().getId()).ifPresent(event::setInitiatorId);
         log.info("Event with ID={} was updated", eventId);
         return eventMapper.toEventFullDto(eventRepository.save(event), updateEventAdminRequest.getInitiator());
     }
@@ -199,6 +200,7 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(updateEventUserDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         Optional.ofNullable(updateEventUserDto.getRequestModeration()).ifPresent(event::setRequestModeration);
         Optional.ofNullable(updateEventUserDto.getTitle()).ifPresent(event::setTitle);
+        Optional.ofNullable(updateEventUserDto.getInitiator().getId()).ifPresent(event::setInitiatorId);
         if (updateEventUserDto.getStateAction() != null) {
             if (updateEventUserDto.getStateAction().equals(StateActionForUser.SEND_TO_REVIEW)) {
                 event.setState(EventState.PENDING);
