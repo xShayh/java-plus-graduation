@@ -11,6 +11,7 @@ import ru.practicum.categories.repository.CategoryRepository;
 import ru.practicum.dto.categories.CategoryDto;
 import ru.practicum.dto.categories.NewCategoryDto;
 import ru.practicum.events.repository.EventRepository;
+import ru.practicum.exceptions.ConflictDataException;
 import ru.practicum.exceptions.NotFoundException;
 
 import java.security.InvalidParameterException;
@@ -45,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Long catId) {
         Category category = getCategoryById(catId);
         if (eventRepository.findByCategory(category).isPresent()) {
-            throw new InvalidParameterException("Category is related to event");
+            throw new ConflictDataException("Category is related to event");
         }
         categoryRepository.deleteById(catId);
         log.info("Category with ID={} was deleted", catId);

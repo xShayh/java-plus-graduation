@@ -26,6 +26,7 @@ import ru.practicum.events.repository.LocationRepository;
 import ru.practicum.dto.events.AdminEventState;
 import ru.practicum.dto.events.EventState;
 import ru.practicum.dto.events.StateActionForUser;
+import ru.practicum.exceptions.ConflictDataException;
 import ru.practicum.exceptions.EventDateValidationException;
 import ru.practicum.exceptions.NotFoundException;
 import stat.StatClient;
@@ -174,7 +175,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new RuntimeException(String.format("Event with ID=%d was not found ", eventId)));
         if (event.getPublishedOn() != null) {
-            throw new InvalidParameterException("Event is already published");
+            throw new ConflictDataException("Event is already published");
         }
         if (updateEventUserDto.getEventDate() != null && !updateEventUserDto.getEventDate()
                 .isAfter(LocalDateTime.now().plusHours(2))) {
@@ -256,9 +257,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto publicGetEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(String.format("Event with ID=%d was not found", eventId)));
+                .orElseThrow(() -> new ConflictDataException(String.format("Event with ID=%d was not found", eventId)));
         if (event.getState() != EventState.PUBLISHED) {
-            throw new NotFoundException(String.format("Event with ID=%d was not published", eventId));
+            throw new ConflictDataException(String.format("Event with ID=%d was not published", eventId));
         }
         log.info("Вызов метода по добавлению просмотров");
         addViews("/events/" + event.getId(), event);

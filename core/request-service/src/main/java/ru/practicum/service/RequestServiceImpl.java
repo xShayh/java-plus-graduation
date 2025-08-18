@@ -156,8 +156,9 @@ public class RequestServiceImpl implements RequestService {
         }
 
         UserShortDto initiator = event.getInitiator();
-        if (initiator.getId().equals(requesterId))
-            throw new ConflictDataException("Инициатор события не может подать заявку на участие в своём событии");
+        if (initiator != null && initiator.getId().equals(requesterId)) {
+            throw new ConflictDataException("Инициатор события не может добавить запрос на участие в своём событии");
+        }
 
         if (event.getState() != EventState.PUBLISHED) {
             throw new InvalidParameterException("Нельзя участвовать в неопубликованных событиях");
