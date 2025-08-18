@@ -258,7 +258,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with ID=%d was not found", eventId)));
         if (event.getState() != EventState.PUBLISHED) {
-            throw new DataIntegrityViolationException(String.format("Event with ID=%d was not published", eventId));
+            throw new NotFoundException(String.format("Event with ID=%d was not published", eventId));
         }
         log.info("Вызов метода по добавлению просмотров");
         addViews("/events/" + event.getId(), event);

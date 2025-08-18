@@ -40,7 +40,8 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentNotValidException.class,
-            InvalidDataException.class, HttpMessageNotReadableException.class, HandlerMethodValidationException.class})
+            InvalidDataException.class, HttpMessageNotReadableException.class, HandlerMethodValidationException.class,
+    EventDateValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleMethodArgumentNotValidException(final Exception e) {
         log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage(), e);
