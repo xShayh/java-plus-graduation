@@ -8,6 +8,7 @@ import ru.practicum.categories.model.Category;
 import ru.practicum.dto.events.EventFullDto;
 import ru.practicum.dto.events.EventShortDto;
 import ru.practicum.dto.events.NewEventDto;
+import ru.practicum.dto.request.RequestCountDto;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.events.model.Event;
 import ru.practicum.dto.events.EventState;

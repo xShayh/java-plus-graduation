@@ -17,6 +17,7 @@ import ru.practicum.client.UserClient;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.dto.events.*;
 import ru.practicum.dto.request.ParticipationRequestDto;
+import ru.practicum.dto.request.RequestCountDto;
 import ru.practicum.dto.request.RequestStatus;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.events.mapper.EventMapper;
@@ -398,9 +399,6 @@ public class EventServiceImpl implements EventService {
                 RequestStatus.CONFIRMED);
         log.info("confirmedRequests: {}", confirmedRequests);
 
-        event.setConfirmedRequests((long) confirmedRequests.size());
-        eventRepository.save(event);
-
         List<ParticipationRequestDto> requestToChangeStatus = requestClient.getByIds(requestStatusUpdateRequest.getRequestIds());
         List<Long> idsToChangeStatus = requestToChangeStatus.stream()
                 .map(ParticipationRequestDto::getId)
@@ -421,9 +419,7 @@ public class EventServiceImpl implements EventService {
                 List<ParticipationRequestDto> requestUpdated = requestClient.updateStatus(
                         RequestStatus.CONFIRMED, idsToChangeStatus);
 
-                List<ParticipationRequestDto> updatedConfirmed =
-                        requestClient.getByStatus(eventId, RequestStatus.CONFIRMED);
-                event.setConfirmedRequests((long) updatedConfirmed.size());
+                event.setConfirmedRequests(event.getConfirmedRequests() + 1);
                 eventRepository.save(event);
 
                 return new EventRequestStatusUpdateResultDto(requestUpdated, null);
