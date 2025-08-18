@@ -118,9 +118,14 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(updateEventAdminRequest.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         Optional.ofNullable(updateEventAdminRequest.getRequestModeration()).ifPresent(event::setRequestModeration);
         Optional.ofNullable(updateEventAdminRequest.getTitle()).ifPresent(event::setTitle);
-        Optional.ofNullable(updateEventAdminRequest.getInitiator().getId()).ifPresent(event::setInitiatorId);
+        Event savedEvent = eventRepository.save(event);
+        UserShortDto initiatorDto = null;
+        if (savedEvent.getInitiatorId() != null) {
+            initiatorDto = new UserShortDto();
+            initiatorDto.setId(savedEvent.getInitiatorId());
+        }
         log.info("Event with ID={} was updated", eventId);
-        return eventMapper.toEventFullDto(eventRepository.save(event), updateEventAdminRequest.getInitiator());
+        return eventMapper.toEventFullDto(savedEvent, initiatorDto);
     }
 
     @Override
@@ -208,8 +213,14 @@ public class EventServiceImpl implements EventService {
                 event.setState(EventState.CANCELED);
             }
         }
+        Event savedEvent = eventRepository.save(event);
+        UserShortDto initiatorDto = null;
+        if (savedEvent.getInitiatorId() != null) {
+            initiatorDto = new UserShortDto();
+            initiatorDto.setId(savedEvent.getInitiatorId());
+        }
         log.info("Event with ID={} was updated", eventId);
-        return eventMapper.toEventFullDto(eventRepository.save(event), updateEventUserDto.getInitiator());
+        return eventMapper.toEventFullDto(savedEvent, initiatorDto);
     }
 
     @Override
