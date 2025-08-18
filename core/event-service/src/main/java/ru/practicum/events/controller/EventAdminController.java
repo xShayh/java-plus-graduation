@@ -22,7 +22,7 @@ public class EventAdminController {
     private final EventService eventService;
 
     @GetMapping
-    public ResponseEntity<List<EventFullDto>> adminGetEvents(@RequestParam(required = false) List<Long> users,
+    public List<EventFullDto> adminGetEvents(@RequestParam(required = false) List<Long> users,
                                                              @RequestParam(required = false) List<String> states,
                                                              @RequestParam(required = false) List<Long> categories,
                                                              @RequestParam(required = false)
@@ -32,7 +32,7 @@ public class EventAdminController {
                                                              @RequestParam(defaultValue = "0") Integer from,
                                                              @RequestParam(defaultValue = "10") Integer size) {
         EventAdminParams eventAdminParams = new EventAdminParams(users, states, categories, rangeStart, rangeEnd, from, size);
-        return ResponseEntity.ok().body(eventService.adminGetEvents(eventAdminParams));
+        return eventService.adminGetEvents(eventAdminParams);
     }
 
     @PatchMapping("/{eventId}")

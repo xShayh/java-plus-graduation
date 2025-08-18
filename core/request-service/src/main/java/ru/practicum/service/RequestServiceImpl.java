@@ -161,7 +161,7 @@ public class RequestServiceImpl implements RequestService {
         }
 
         if (event.getState() != EventState.PUBLISHED) {
-            throw new InvalidParameterException("Нельзя участвовать в неопубликованных событиях");
+            throw new ConflictDataException("Нельзя участвовать в неопубликованных событиях");
         }
 
         long confirmedCount = requestRepository.findAllByEventId(event.getId()).stream()
