@@ -86,32 +86,41 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
-    @Override
-    public EventFullDto updateAdminEvent(Long eventId, UpdateEventAdminRequestDto updateEventAdminRequestDto) {
-        log.info("update: {}", updateEventAdminRequestDto);
-        Event event = update(eventId, updateEventAdminRequestDto);
-        UserShortDto user = getUserById(event.getInitiatorId());
-        return eventMapper.toEventFullDto(event);
-    }
-
-    @Override
-    @Transactional
-    public Event update(Long eventId, UpdateEventAdminRequestDto updateEventAdminRequestDto) {
+    public EventFullDto updateAdminEvent(Long eventId, UpdateEventAdminRequestDto updateEventAdminRequest) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("On Event admin update - Event doesn't exist with id: " + eventId));
-        Category category = null;
-        if (updateEventAdminRequestDto.getCategory() != null) {
-            category = categoryRepository.findById(updateEventAdminRequestDto.getCategory())
-                    .orElseThrow(() -> new NotFoundException("On Event admin update - Category doesn't exist with id: " +
-                            updateEventAdminRequestDto.getCategory()));
+                .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
+        if (updateEventAdminRequest.getStateAction() == AdminEventState.PUBLISH_EVENT && event.getState() != EventState.PENDING) {
+            throw new DataIntegrityViolationException("Event should be in PENDING state");
         }
-
-        calculateNewEventState(event, updateEventAdminRequestDto.getStateAction());
-
-        event = eventRepository.save(event);
-        log.info("Event is updated by admin: {}", event);
-
-        return event;
+        if (updateEventAdminRequest.getStateAction() == AdminEventState.REJECT_EVENT && event.getState() == EventState.PUBLISHED) {
+            throw new DataIntegrityViolationException("Event can be rejected only in PENDING state");
+        }
+        if (updateEventAdminRequest.getStateAction() != null) {
+            if (updateEventAdminRequest.getStateAction().equals(AdminEventState.PUBLISH_EVENT)) {
+                event.setState(EventState.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            }
+            if (updateEventAdminRequest.getStateAction().equals(AdminEventState.REJECT_EVENT)) {
+                event.setState(EventState.CANCELED);
+            }
+        }
+        Optional.ofNullable(updateEventAdminRequest.getAnnotation()).ifPresent(event::setAnnotation);
+        if (updateEventAdminRequest.getCategory() != null) {
+            Category category = getCategory(updateEventAdminRequest.getCategory());
+            event.setCategory(category);
+        }
+        Optional.ofNullable(updateEventAdminRequest.getDescription()).ifPresent(event::setDescription);
+        Optional.ofNullable(updateEventAdminRequest.getEventDate()).ifPresent(event::setEventDate);
+        if (updateEventAdminRequest.getLocation() != null) {
+            event.setLocation(locationRepository.save(locationMapper.toLocation(updateEventAdminRequest.getLocation())));
+        }
+        Optional.ofNullable(updateEventAdminRequest.getPaid()).ifPresent(event::setPaid);
+        Optional.ofNullable(updateEventAdminRequest.getParticipantLimit()).ifPresent(event::setParticipantLimit);
+        Optional.ofNullable(updateEventAdminRequest.getRequestModeration()).ifPresent(event::setRequestModeration);
+        Optional.ofNullable(updateEventAdminRequest.getTitle()).ifPresent(event::setTitle);
+        event.setInitiatorId(updateEventAdminRequest.getInitiator().getId());
+        log.info("Event with ID={} was updated", eventId);
+        return eventMapper.toEventFullDto(eventRepository.save(event));
     }
 
     @Override
@@ -421,35 +430,5 @@ public class EventServiceImpl implements EventService {
             return new EventRequestStatusUpdateResultDto(null, requestUpdated);
         }
         return null;
-    }
-
-    private void calculateNewEventState(Event event, AdminEventState stateAction) {
-        if (stateAction == AdminEventState.PUBLISH_EVENT) {
-            if (event.getState() != EventState.PENDING) {
-                throw new ConflictDataException(
-                        String.format("On Event admin update - " +
-                                        "Event with id %s can't be published from the state %s: ",
-                                event.getId(), event.getState()));
-            }
-
-            LocalDateTime currentDateTime = DateTimeUtil.currentDateTime();
-            if (currentDateTime.plusHours(1).isAfter(event.getEventDate()))
-                throw new ConflictDataException(
-                        String.format("On Event admin update - " +
-                                        "Event with id %s can't be published because the event date is to close %s: ",
-                                event.getId(), event.getEventDate()));
-
-            event.setPublishedOn(currentDateTime);
-            event.setState(EventState.PUBLISHED);
-        } else if (stateAction == AdminEventState.REJECT_EVENT) {
-            if (event.getState() == EventState.PUBLISHED) {
-                throw new ConflictDataException(
-                        String.format("On Event admin update - " +
-                                        "Event with id %s can't be canceled because it is already published: ",
-                                event.getState()));
-            }
-
-            event.setState(EventState.CANCELED);
-        }
     }
 }
