@@ -51,4 +51,9 @@ public interface EventService {
     List<ParticipationRequestDto> getEventAllParticipationRequests(Long eventId, Long userId);
 
     Event checkAndGetEventByIdAndInitiatorId(Long eventId, Long initiatorId);
+
+    EventRequestStatusUpdateResultDto changeEventState(
+            Long userId,
+            Long eventId,
+            EventRequestStatusUpdateRequestDto requestStatusUpdateRequest);
 }

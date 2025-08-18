@@ -327,7 +327,8 @@ public class EventServiceImpl implements EventService {
     private void addViews(String uri, Event event) {
         ResponseEntity<Object> response = statClient.getStats(START, END, List.of(uri), false);
         ObjectMapper mapper = new ObjectMapper();
-        List<ViewStatsDto> views = mapper.convertValue(response.getBody(), new TypeReference<List<ViewStatsDto>>() {});
+        List<ViewStatsDto> views = mapper.convertValue(response.getBody(), new TypeReference<List<ViewStatsDto>>() {
+        });
         event.setViews(views.isEmpty() ? 0L : (long) views.size());
         log.info("Views was updated, views= {}", event.getViews());
     }
@@ -371,5 +372,60 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findByIdAndInitiatorId(eventId, initiatorId)
                 .orElseThrow(() -> new NotFoundException(String.format("On event operations - " +
                         "Event doesn't exist with id %s or not available for User with id %s: ", eventId, initiatorId)));
+    }
+
+    @Override
+    public EventRequestStatusUpdateResultDto changeEventState(
+            Long userId,
+            Long eventId,
+            EventRequestStatusUpdateRequestDto requestStatusUpdateRequest) {
+        Event event = checkAndGetEventByIdAndInitiatorId(eventId, userId);
+        Long participantsLimit = event.getParticipantLimit();
+
+        List<ParticipationRequestDto> confirmedRequests = requestClient.getByStatus(eventId,
+                RequestStatus.CONFIRMED);
+        log.info("confirmedRequests: {}", confirmedRequests);
+
+        List<ParticipationRequestDto> requestToChangeStatus = requestClient.getByIds(requestStatusUpdateRequest.getRequestIds());
+        List<Long> idsToChangeStatus = requestToChangeStatus.stream()
+                .map(ParticipationRequestDto::getId)
+                .toList();
+        log.info("idsToChangeStatus: {}", idsToChangeStatus);
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+            log.info("Заявки подтверждать не требуется");
+            return null;
+        }
+
+        log.info("Заявки:  Лимит: {}, подтвержденных заявок {}, запрошенных заявок {}, разница между ними: {}", participantsLimit,
+                confirmedRequests.size(), requestStatusUpdateRequest.getRequestIds().size(), (participantsLimit
+                        - confirmedRequests.size() - requestStatusUpdateRequest.getRequestIds().size()));
+
+        if (requestStatusUpdateRequest.getStatus().equals(RequestStatus.CONFIRMED)) {
+            log.info("меняем статус заявок для статуса: {}", RequestStatus.CONFIRMED);
+            if ((participantsLimit - (confirmedRequests.size()) - requestStatusUpdateRequest.getRequestIds().size()) >= 0) {
+                List<ParticipationRequestDto> requestUpdated = requestClient.updateStatus(
+                        RequestStatus.CONFIRMED, idsToChangeStatus);
+                return new EventRequestStatusUpdateResultDto(requestUpdated, null);
+            } else {
+                throw new ConflictDataException("слишком много участников. Лимит: " + participantsLimit +
+                        ", уже подтвержденных заявок: " + confirmedRequests.size() + ", а заявок на одобрение: " +
+                        idsToChangeStatus.size() +
+                        ". Разница между ними: " + (participantsLimit - confirmedRequests.size() -
+                        idsToChangeStatus.size()));
+            }
+        } else if (requestStatusUpdateRequest.getStatus().equals(RequestStatus.REJECTED)) {
+            log.info("меняем статус заявок для статуса: {}", RequestStatus.REJECTED);
+
+            for (ParticipationRequestDto request : requestToChangeStatus) {
+                if (request.getStatus() == RequestStatus.CONFIRMED) {
+                    throw new ConflictDataException("Заявка" + request.getStatus() + "уже подтверждена.");
+                }
+            }
+
+            List<ParticipationRequestDto> requestUpdated = requestClient.updateStatus(
+                    RequestStatus.REJECTED, idsToChangeStatus);
+            return new EventRequestStatusUpdateResultDto(null, requestUpdated);
+        }
+        return null;
     }
 }
