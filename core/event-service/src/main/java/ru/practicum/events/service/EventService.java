@@ -56,4 +56,6 @@ public interface EventService {
             Long userId,
             Long eventId,
             EventRequestStatusUpdateRequestDto requestStatusUpdateRequest);
+
+    Event update(Long eventId, UpdateEventAdminRequestDto updateEventAdminRequestDto);
 }
