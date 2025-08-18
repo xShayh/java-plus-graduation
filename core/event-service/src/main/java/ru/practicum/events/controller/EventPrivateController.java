@@ -9,6 +9,7 @@ import ru.practicum.dto.events.EventFullDto;
 import ru.practicum.dto.events.EventShortDto;
 import ru.practicum.dto.events.NewEventDto;
 import ru.practicum.dto.events.UpdateEventUserDto;
+import ru.practicum.dto.request.ParticipationRequestDto;
 import ru.practicum.events.service.EventService;
 
 import java.util.List;
@@ -20,26 +21,26 @@ public class EventPrivateController {
 
     private final EventService eventService;
 
-    @PostMapping
+    @PostMapping(path = "/users/{userId}/events")
     public ResponseEntity<EventFullDto> createEvent(@PathVariable Long userId,
                                                     @Valid @RequestBody NewEventDto eventDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(eventService.createEvent(userId, eventDto));
     }
 
-    @GetMapping
+    @GetMapping(path = "/users/{userId}/events")
     public ResponseEntity<List<EventShortDto>> getEventsByUser(@PathVariable Long userId,
                                                                @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                                @RequestParam(name = "size", defaultValue = "10") Integer size) {
         return ResponseEntity.ok().body(eventService.getEventsByUser(userId, from, size));
     }
 
-    @GetMapping("/{eventId}")
+    @GetMapping(path = "/users/{userId}/events/{eventId}")
     public ResponseEntity<EventFullDto> getFullEventInformation(@PathVariable Long userId,
                                                                 @PathVariable Long eventId) {
         return ResponseEntity.ok().body(eventService.getFullEventInformation(userId, eventId));
     }
 
-    @PatchMapping("/{eventId}")
+    @PatchMapping(path = "/users/{userId}/events/{eventId}")
     public ResponseEntity<EventFullDto> updateEventByUser(@PathVariable Long userId,
                                                           @PathVariable Long eventId,
                                                           @Valid @RequestBody UpdateEventUserDto updateEventUserDto) {
@@ -61,6 +62,12 @@ public class EventPrivateController {
     @GetMapping("/like")
     public ResponseEntity<List<EventShortDto>> getAllLikedEvents(@PathVariable Long userId) {
         return ResponseEntity.ok().body(eventService.getAllLikedEvents(userId));
+    }
+
+    @GetMapping(path = "/users/{userId}/events/{eventId}/requests")
+    public List<ParticipationRequestDto> getParticipationRequests(@PathVariable("userId") Long userId,
+                                                                  @PathVariable("eventId") Long eventId) {
+        return eventService.getEventAllParticipationRequests(eventId, userId);
     }
 }
 

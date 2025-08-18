@@ -12,9 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.categories.repository.CategoryRepository;
 import ru.practicum.categories.model.Category;
+import ru.practicum.client.RequestClient;
 import ru.practicum.client.UserClient;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.dto.events.*;
+import ru.practicum.dto.request.ParticipationRequestDto;
+import ru.practicum.dto.request.RequestStatus;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.events.mapper.EventMapper;
 import ru.practicum.events.mapper.LocationMapper;
@@ -31,7 +34,6 @@ import ru.practicum.exceptions.EventDateValidationException;
 import ru.practicum.exceptions.NotFoundException;
 import stat.StatClient;
 
-import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -49,6 +51,7 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
     private final StatClient statClient;
     private final UserClient userClient;
+    private final RequestClient requestClient;
 
     private static final String START = "2025-01-01 00:00:00";
     private static final String END = "2025-12-31 23:59:59";
@@ -355,5 +358,18 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventById(Long eventId) {
         Event event = getEvent(eventId);
         return eventMapper.toEventFullDto(event);
+    }
+
+    @Override
+    public List<ParticipationRequestDto> getEventAllParticipationRequests(Long eventId, Long userId) {
+        Event event = checkAndGetEventByIdAndInitiatorId(eventId, userId);
+        return requestClient.getByStatus(event.getId(), RequestStatus.PENDING);
+    }
+
+    @Override
+    public Event checkAndGetEventByIdAndInitiatorId(Long eventId, Long initiatorId) {
+        return eventRepository.findByIdAndInitiatorId(eventId, initiatorId)
+                .orElseThrow(() -> new NotFoundException(String.format("On event operations - " +
+                        "Event doesn't exist with id %s or not available for User with id %s: ", eventId, initiatorId)));
     }
 }

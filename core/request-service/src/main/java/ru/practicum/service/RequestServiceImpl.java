@@ -152,7 +152,7 @@ public class RequestServiceImpl implements RequestService {
 
     private void checkRequest(Long requesterId, EventFullDto event) {
         if (requestRepository.existsByRequesterIdAndEventId(requesterId, event.getId())) {
-            throw new InvalidParameterException("Нельзя создать повторный запрос");
+            throw new ConflictDataException("Нельзя создать повторный запрос");
         }
 
         UserShortDto initiator = event.getInitiator();
@@ -169,7 +169,7 @@ public class RequestServiceImpl implements RequestService {
                 .count();
 
         if (event.getParticipantLimit() != 0 && confirmedCount >= event.getParticipantLimit()) {
-            throw new InvalidParameterException("У события достигнут лимит запросов на участие");
+            throw new ConflictDataException("У события достигнут лимит запросов на участие");
         }
     }
 

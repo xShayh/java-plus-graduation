@@ -2,6 +2,7 @@ package ru.practicum.events.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.events.*;
+import ru.practicum.dto.request.ParticipationRequestDto;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.events.model.Event;
 
@@ -46,4 +47,8 @@ public interface EventService {
     Event getEvent(Long eventId);
 
     EventFullDto getEventById(Long eventId);
+
+    List<ParticipationRequestDto> getEventAllParticipationRequests(Long eventId, Long userId);
+
+    Event checkAndGetEventByIdAndInitiatorId(Long eventId, Long initiatorId);
 }
