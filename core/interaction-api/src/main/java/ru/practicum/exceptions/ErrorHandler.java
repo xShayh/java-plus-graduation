@@ -17,7 +17,7 @@ import java.io.StringWriter;
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
-    @ExceptionHandler
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNotFoundException(final NotFoundException e) {
         log.error("{} {}", HttpStatus.NOT_FOUND, e.getMessage(), e);

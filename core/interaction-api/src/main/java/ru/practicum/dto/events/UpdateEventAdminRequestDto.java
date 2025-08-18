@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.util.DateTimeUtil;
 import ru.practicum.validation.NullOrNotBlank;
 
@@ -30,6 +31,7 @@ public class UpdateEventAdminRequestDto {
     private LocalDateTime eventDate;
     private LocationDto location;
     private Boolean paid;
+    private UserShortDto initiator;
     @PositiveOrZero
     private Long participantLimit;
     private Boolean requestModeration;

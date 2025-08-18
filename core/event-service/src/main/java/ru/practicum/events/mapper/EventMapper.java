@@ -1,6 +1,7 @@
 package ru.practicum.events.mapper;
 
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 import ru.practicum.categories.mapper.CategoryMapper;
 import ru.practicum.categories.model.Category;
@@ -20,12 +21,13 @@ public class EventMapper {
     private final CategoryMapper categoryMapper;
     private final LocationMapper locationMapper;
 
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "views", ignore = true)
     public EventFullDto toEventFullDto(Event event) {
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
                 .category(categoryMapper.toCategoryDto(event.getCategory()))
-                .confirmedRequests(event.getConfirmedRequests())
                 .eventDate(event.getEventDate())
                 .paid(event.getPaid())
                 .title(event.getTitle())
@@ -40,6 +42,8 @@ public class EventMapper {
                 .build();
     }
 
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "views", ignore = true)
     public Event toEvent(NewEventDto newEventDto, Category category, Long initiatorId) {
         return new Event(
                 0L,
