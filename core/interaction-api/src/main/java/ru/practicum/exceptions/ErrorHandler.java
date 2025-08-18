@@ -3,76 +3,80 @@ package ru.practicum.exceptions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
-import java.security.InvalidParameterException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundResponse(final NotFoundException e) {
-        log.info("NotFoundException with message {} was thrown", e.getMessage());
-        return new ErrorResponse(e.getMessage());
+    public ApiError handleNotFoundException(final NotFoundException e) {
+        log.error("{} {}", HttpStatus.NOT_FOUND, e.getMessage(), e);
+        return new ApiError(
+                HttpStatus.NOT_FOUND,
+                "The required object was not found.",
+                e.getMessage(),
+                getStackTrace(e));
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMethodArgumentNotValid(final MethodArgumentNotValidException e) {
-        log.error("MethodArgumentNotValidException with message {} was thrown", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleInvalidDataException(final InvalidDataException e) {
-        log.error("InvalidDataException with message {} was thrown", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleEventDateValidationException(final EventDateValidationException e) {
-        log.error("EventDateValidationException with message {} was thrown", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMissingSe(final MissingServletRequestParameterException e) {
-        log.error("MissingServletRequestParameterException with message {} was thrown", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
+    @ExceptionHandler({ConflictDataException.class, DataIntegrityViolationException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleInvalidParameter(final InvalidParameterException e) {
-        log.error("InvalidParameterException with message {} was thrown", e.getMessage());
-        return new ErrorResponse(e.getMessage());
+    public ApiError handleDataIntegrityViolationException(final Exception e) {
+        log.error("{} {}", HttpStatus.CONFLICT, e.getMessage(), e);
+        return new ApiError(
+                HttpStatus.CONFLICT,
+                "Integrity constraint has been violated.",
+                e.getMessage(),
+                getStackTrace(e));
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleDataIntegrityViolation(final DataIntegrityViolationException e) {
-        log.error("DataIntegrityViolationException with message {} was thrown", e.getMessage());
-        return new ErrorResponse(e.getMessage());
+    @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentNotValidException.class,
+            InvalidDataException.class, HttpMessageNotReadableException.class, HandlerMethodValidationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleMethodArgumentNotValidException(final Exception e) {
+        log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        return new ApiError(
+                HttpStatus.BAD_REQUEST,
+                "Incorrectly made request.",
+                e.getMessage(),
+                getStackTrace(e));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleException(final Exception e) {
-        log.error("Exception with message {} was thrown", e.getMessage());
-        return new ErrorResponse(e.getMessage());
+    public ApiError handleInternalServerException(final InternalServerException e) {
+        log.error("{} {}", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        return new ApiError(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal server error.",
+                e.getMessage(),
+                getStackTrace(e));
     }
 
-    public record ErrorResponse(String error) {
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleException(final Exception e) {
+        log.error("500 {}", e.getMessage(), e);
+        return new ApiError(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred",
+                e.getMessage(),
+                getStackTrace(e));
     }
 
-
+    private String getStackTrace(final Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
+    }
 }

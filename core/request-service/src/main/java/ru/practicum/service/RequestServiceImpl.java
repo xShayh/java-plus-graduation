@@ -10,6 +10,7 @@ import ru.practicum.dto.events.EventFullDto;
 import ru.practicum.dto.events.EventState;
 import ru.practicum.dto.request.*;
 import ru.practicum.dto.user.UserShortDto;
+import ru.practicum.exceptions.ConflictDataException;
 import ru.practicum.exceptions.InvalidDataException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.mapper.RequestMapper;
@@ -155,9 +156,9 @@ public class RequestServiceImpl implements RequestService {
         }
 
         UserShortDto initiator = event.getInitiator();
-        if (initiator != null && initiator.getId().equals(requesterId)) {
-            throw new InvalidParameterException("Инициатор события не может добавить запрос на участие в своём событии");
-        }
+        if (event.getInitiator().getId().equals(requesterId))
+            throw new ConflictDataException(
+                    String.format("Инициатор события не может подать заявку на участие в своём событии", event.getId(), requesterId));
 
         if (event.getState() != EventState.PUBLISHED) {
             throw new InvalidParameterException("Нельзя участвовать в неопубликованных событиях");

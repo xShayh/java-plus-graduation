@@ -15,25 +15,25 @@ import java.util.List;
 @Validated
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/users/{userId}/requests")
+@RequestMapping(path = "/users")
 public class RequestController {
     private final RequestService requestService;
 
-    @GetMapping
+    @GetMapping("/{userId}/requests")
     public List<RequestDto> getRequests(@PathVariable Long userId) {
         log.info("Получить запросы по userId --> {}", userId);
         return requestService.getRequests(userId);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
+    @PostMapping("/{userId}/requests")
     public RequestDto createRequest(@PathVariable Long userId,
                                     @RequestParam Long eventId) {
         log.info("Создать запрос userId --> {}, eventId --> {}", userId, eventId);
         return requestService.createRequest(userId, eventId);
     }
 
-    @PatchMapping("/{requestId}/cancel")
+    @PatchMapping("/{userId}/requests/{requestId}/cancel")
     RequestDto cancelRequest(@PathVariable Long userId,
                              @PathVariable Long requestId) {
         log.info("Отменить запрос по userId --> {}, requestId --> {}", userId, requestId);
