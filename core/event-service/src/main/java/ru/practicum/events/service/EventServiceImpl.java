@@ -371,7 +371,8 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventById(Long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Такого события не существует: " + eventId));
-        return eventMapper.toEventFullDto(event);
+        UserShortDto initiator = userClient.getById(event.getInitiatorId());
+        return eventMapper.toEventFullDto(event, initiator);
     }
 
     @Override
