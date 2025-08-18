@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.events.EventAdminParams;
 import ru.practicum.dto.events.EventFullDto;
-import ru.practicum.dto.events.UpdateEventAdminRequest;
+import ru.practicum.dto.events.UpdateEventAdminRequestDto;
 import ru.practicum.events.service.EventService;
 
 import java.time.LocalDateTime;
@@ -36,9 +36,9 @@ public class EventAdminController {
     }
 
     @PatchMapping("/{eventId}")
-    public ResponseEntity<EventFullDto> adminUpdateEvents(@PathVariable("eventId") Long eventId,
-                                                          @Valid @RequestBody UpdateEventAdminRequest updateAdminEvent) {
-        return ResponseEntity.ok().body(eventService.updateAdminEvent(eventId, updateAdminEvent));
+    public ResponseEntity<EventFullDto> adminUpdateEvents(@PathVariable Long eventId,
+                                                          @Valid @RequestBody UpdateEventAdminRequestDto updateEventAdminRequestDto) {
+        return ResponseEntity.ok().body(eventService.updateAdminEvent(eventId, updateEventAdminRequestDto));
     }
 
     @GetMapping("/{userId}/like")

@@ -84,7 +84,7 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
-    public EventFullDto updateAdminEvent(Long eventId, UpdateEventAdminRequest updateEventAdminRequest) {
+    public EventFullDto updateAdminEvent(Long eventId, UpdateEventAdminRequestDto updateEventAdminRequest) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
 
@@ -262,7 +262,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ConflictDataException(String.format("Event with ID=%d was not found", eventId)));
         if (event.getState() != EventState.PUBLISHED) {
-            throw new ConflictDataException(String.format("Event with ID=%d was not published", eventId));
+            throw new NotFoundException(String.format("Event with ID=%d was not published", eventId));
         }
         log.info("Вызов метода по добавлению просмотров");
         addViews("/events/" + event.getId(), event);

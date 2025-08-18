@@ -22,7 +22,7 @@ public interface EventService {
     EventFullDto updateEventByUser(Long userId, Long eventId, UpdateEventUserDto updateEventUserDto);
 
     @Transactional
-    EventFullDto updateAdminEvent(Long eventId, UpdateEventAdminRequest updateEventAdminRequest);
+    EventFullDto updateAdminEvent(Long eventId, UpdateEventAdminRequestDto updateEventAdminRequest);
 
     List<EventFullDto> adminGetEvents(EventAdminParams eventParams);
 
