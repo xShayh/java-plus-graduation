@@ -155,8 +155,8 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictDataException("Нельзя создать повторный запрос");
         }
 
-        UserShortDto initiator = event.getInitiator();
-        if (initiator != null && initiator.getId().equals(requesterId)) {
+        Long initiatorId = event.getInitiator().getId();
+        if (initiatorId != null && initiatorId.equals(requesterId)) {
             throw new ConflictDataException("Инициатор события не может добавить запрос на участие в своём событии");
         }
 
