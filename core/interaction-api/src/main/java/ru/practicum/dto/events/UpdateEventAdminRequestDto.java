@@ -39,4 +39,5 @@ public class UpdateEventAdminRequestDto {
     @Size(min = 3, max = 120)
     private String title;
     private AdminEventState stateAction;
+    private Long confirmedRequests;
 }

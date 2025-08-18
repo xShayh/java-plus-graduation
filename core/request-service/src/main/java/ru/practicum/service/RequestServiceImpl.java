@@ -35,7 +35,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RequestDto> getRequests(Long userId) {
+    public List<ParticipationRequestDto> getRequests(Long userId) {
         userClient.getById(userId);
         List<Request> requests = requestRepository.findAllByRequesterId(userId);
         return requestMapper.toParticipationRequestDto(requests);
@@ -43,7 +43,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public RequestDto createRequest(Long userId, Long eventId) {
+    public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         EventFullDto event = eventClient.getById(eventId);
         userClient.getById(userId);
 
@@ -62,12 +62,12 @@ public class RequestServiceImpl implements RequestService {
 
         request = requestRepository.save(request);
 
-        return requestMapper.mapToRequestDto(request);
+        return requestMapper.toParticipationRequestDto(request);
     }
 
     @Override
     @Transactional
-    public RequestDto cancelRequest(Long userId, Long requestId) {
+    public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         userClient.getById(userId);
 
         Request request = getRequestById(requestId);
@@ -79,16 +79,16 @@ public class RequestServiceImpl implements RequestService {
         request.setStatus(RequestStatus.CANCELED);
         requestRepository.save(request);
 
-        return requestMapper.mapToRequestDto(request);
+        return requestMapper.toParticipationRequestDto(request);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<RequestDto> getRequestByUserOfEvent(Long userId, Long eventId) {
+    public List<ParticipationRequestDto> getRequestByUserOfEvent(Long userId, Long eventId) {
         userClient.getById(userId);
         List<Request> requests = requestRepository.findAllByRequesterIdAndEventId(userId, eventId);
         return requests.stream()
-                .map(requestMapper::mapToRequestDto)
+                .map(requestMapper::toParticipationRequestDto)
                 .collect(Collectors.toList());
     }
 

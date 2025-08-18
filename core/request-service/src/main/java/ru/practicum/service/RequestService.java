@@ -5,13 +5,13 @@ import ru.practicum.dto.request.*;
 import java.util.List;
 
 public interface RequestService {
-    List<RequestDto> getRequests(Long userId);
+    List<ParticipationRequestDto> getRequests(Long userId);
 
-    RequestDto createRequest(Long userId, Long eventId);
+    ParticipationRequestDto createRequest(Long userId, Long eventId);
 
-    RequestDto cancelRequest(Long userId, Long requestId);
+    ParticipationRequestDto cancelRequest(Long userId, Long requestId);
 
-    List<RequestDto> getRequestByUserOfEvent(Long userId, Long eventId);
+    List<ParticipationRequestDto> getRequestByUserOfEvent(Long userId, Long eventId);
 
     EventRequestStatusUpdateResult updateRequests(Long userId, Long eventId, EventRequestStatusUpdateRequest requestStatusUpdateRequest);
 

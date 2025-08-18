@@ -21,7 +21,6 @@ public class EventMapper {
     private final CategoryMapper categoryMapper;
     private final LocationMapper locationMapper;
 
-    @Mapping(target = "confirmedRequests", ignore = true)
     @Mapping(target = "views", ignore = true)
     public EventFullDto toEventFullDto(Event event) {
         return EventFullDto.builder()
@@ -39,10 +38,10 @@ public class EventMapper {
                 .publishedOn(event.getPublishedOn())
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
+                .confirmedRequests(event.getConfirmedRequests())
                 .build();
     }
 
-    @Mapping(target = "confirmedRequests", ignore = true)
     @Mapping(target = "views", ignore = true)
     public EventFullDto toEventFullDto(Event event, UserShortDto userShortDto) {
         return EventFullDto.builder()
@@ -61,10 +60,10 @@ public class EventMapper {
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
                 .initiator(userShortDto)
+                .confirmedRequests(event.getConfirmedRequests())
                 .build();
     }
 
-    @Mapping(target = "confirmedRequests", ignore = true)
     @Mapping(target = "views", ignore = true)
     public Event toEvent(NewEventDto newEventDto, Category category, Long initiatorId) {
         return new Event(

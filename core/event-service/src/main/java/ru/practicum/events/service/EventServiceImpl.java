@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.categories.repository.CategoryRepository;
 import ru.practicum.categories.model.Category;
 import ru.practicum.client.RequestClient;
@@ -33,7 +32,6 @@ import ru.practicum.dto.events.StateActionForUser;
 import ru.practicum.exceptions.ConflictDataException;
 import ru.practicum.exceptions.EventDateValidationException;
 import ru.practicum.exceptions.NotFoundException;
-import ru.practicum.util.DateTimeUtil;
 import stat.StatClient;
 
 import java.time.LocalDateTime;
@@ -118,7 +116,7 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(updateEventAdminRequest.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         Optional.ofNullable(updateEventAdminRequest.getRequestModeration()).ifPresent(event::setRequestModeration);
         Optional.ofNullable(updateEventAdminRequest.getTitle()).ifPresent(event::setTitle);
-
+        Optional.ofNullable(updateEventAdminRequest.getConfirmedRequests()).ifPresent(event::setConfirmedRequests);
         Event savedEvent = eventRepository.save(event);
         UserShortDto initiatorDto = null;
         if (savedEvent.getInitiatorId() != null) {
