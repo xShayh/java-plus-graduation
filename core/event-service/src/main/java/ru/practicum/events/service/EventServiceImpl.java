@@ -118,7 +118,6 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(updateEventAdminRequest.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         Optional.ofNullable(updateEventAdminRequest.getRequestModeration()).ifPresent(event::setRequestModeration);
         Optional.ofNullable(updateEventAdminRequest.getTitle()).ifPresent(event::setTitle);
-        event.setInitiatorId(updateEventAdminRequest.getInitiatorId());
         log.info("Event with ID={} was updated", eventId);
         return eventMapper.toEventFullDto(eventRepository.save(event));
     }

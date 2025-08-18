@@ -31,7 +31,7 @@ public class UpdateEventAdminRequestDto {
     private LocalDateTime eventDate;
     private LocationDto location;
     private Boolean paid;
-    private Long initiatorId;
+    private UserShortDto initiator;
     @PositiveOrZero
     private Long participantLimit;
     private Boolean requestModeration;
