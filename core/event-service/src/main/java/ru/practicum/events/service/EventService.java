@@ -46,7 +46,7 @@ public interface EventService {
 
     Event getEvent(Long eventId);
 
-    EventFullDto getEventById(Long eventId);
+    Event getEventById(Long eventId);
 
     List<ParticipationRequestDto> getEventAllParticipationRequests(Long eventId, Long userId);
 

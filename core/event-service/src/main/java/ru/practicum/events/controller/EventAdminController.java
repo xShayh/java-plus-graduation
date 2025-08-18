@@ -36,9 +36,9 @@ public class EventAdminController {
     }
 
     @PatchMapping("/{eventId}")
-    public ResponseEntity<EventFullDto> adminUpdateEvents(@PathVariable Long eventId,
+    public EventFullDto adminUpdateEvents(@PathVariable Long eventId,
                                                           @Valid @RequestBody UpdateEventAdminRequestDto updateEventAdminRequestDto) {
-        return ResponseEntity.ok().body(eventService.updateAdminEvent(eventId, updateEventAdminRequestDto));
+        return eventService.updateAdminEvent(eventId, updateEventAdminRequestDto);
     }
 
     @GetMapping("/{userId}/like")

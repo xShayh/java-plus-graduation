@@ -1,7 +1,6 @@
 package ru.practicum.events.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.client.EventClient;
@@ -15,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventClientController implements EventClient {
     private final EventService eventService;
-
     @Override
     public EventFullDto getById(Long eventId) {
         return eventService.getEventById(eventId);
