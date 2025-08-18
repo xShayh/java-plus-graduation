@@ -15,7 +15,6 @@ import ru.practicum.events.service.EventService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor
 public class EventPrivateController {
 
