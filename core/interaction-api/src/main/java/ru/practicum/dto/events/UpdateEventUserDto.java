@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.dto.user.UserShortDto;
 
 import java.time.LocalDateTime;
 
@@ -28,7 +29,7 @@ public class UpdateEventUserDto {
     private Long participantLimit;
     private Boolean requestModeration;
     private StateActionForUser stateAction;
-
+    private UserShortDto initiator;
     @Size(min = 3, max = 120)
     private String title;
 }

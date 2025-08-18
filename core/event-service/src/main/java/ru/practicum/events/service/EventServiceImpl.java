@@ -119,7 +119,7 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(updateEventAdminRequest.getRequestModeration()).ifPresent(event::setRequestModeration);
         Optional.ofNullable(updateEventAdminRequest.getTitle()).ifPresent(event::setTitle);
         log.info("Event with ID={} was updated", eventId);
-        return eventMapper.toEventFullDto(eventRepository.save(event));
+        return eventMapper.toEventFullDto(eventRepository.save(event), updateEventAdminRequest.getInitiator());
     }
 
     @Override
@@ -207,7 +207,7 @@ public class EventServiceImpl implements EventService {
             }
         }
         log.info("Event with ID={} was updated", eventId);
-        return eventMapper.toEventFullDto(eventRepository.save(event));
+        return eventMapper.toEventFullDto(eventRepository.save(event), updateEventUserDto.getInitiator());
     }
 
     @Override
