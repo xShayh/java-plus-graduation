@@ -398,6 +398,9 @@ public class EventServiceImpl implements EventService {
                 RequestStatus.CONFIRMED);
         log.info("confirmedRequests: {}", confirmedRequests);
 
+        event.setConfirmedRequests((long) confirmedRequests.size());
+        eventRepository.save(event);
+
         List<ParticipationRequestDto> requestToChangeStatus = requestClient.getByIds(requestStatusUpdateRequest.getRequestIds());
         List<Long> idsToChangeStatus = requestToChangeStatus.stream()
                 .map(ParticipationRequestDto::getId)
@@ -417,6 +420,12 @@ public class EventServiceImpl implements EventService {
             if ((participantsLimit - (confirmedRequests.size()) - requestStatusUpdateRequest.getRequestIds().size()) >= 0) {
                 List<ParticipationRequestDto> requestUpdated = requestClient.updateStatus(
                         RequestStatus.CONFIRMED, idsToChangeStatus);
+
+                List<ParticipationRequestDto> updatedConfirmed =
+                        requestClient.getByStatus(eventId, RequestStatus.CONFIRMED);
+                event.setConfirmedRequests((long) updatedConfirmed.size());
+                eventRepository.save(event);
+
                 return new EventRequestStatusUpdateResultDto(requestUpdated, null);
             } else {
                 throw new ConflictDataException("слишком много участников. Лимит: " + participantsLimit +
