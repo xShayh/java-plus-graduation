@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.categories.mapper.CategoryMapper;
 import ru.practicum.categories.model.Category;
 import ru.practicum.categories.repository.CategoryRepository;
@@ -14,7 +15,6 @@ import ru.practicum.events.repository.EventRepository;
 import ru.practicum.exceptions.ConflictDataException;
 import ru.practicum.exceptions.NotFoundException;
 
-import java.security.InvalidParameterException;
 import java.util.List;
 
 @Service
@@ -35,6 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
         Category category = getCategoryById(catId);
         category.setName(categoryDto.getName());
@@ -43,6 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long catId) {
         Category category = getCategoryById(catId);
         if (eventRepository.findByCategory(category).isPresent()) {

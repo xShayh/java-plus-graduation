@@ -12,7 +12,6 @@ import ru.practicum.model.RequestCount;
 
 import java.util.List;
 
-@Repository
 public interface RequestRepository extends JpaRepository<Request, Long>,
         QuerydslPredicateExecutor<Request> {
     List<Request> findAllByEventId(Long eventId);

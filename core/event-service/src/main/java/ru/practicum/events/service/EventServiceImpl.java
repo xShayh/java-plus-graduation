@@ -18,7 +18,6 @@ import ru.practicum.client.UserClient;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.dto.events.*;
 import ru.practicum.dto.request.ParticipationRequestDto;
-import ru.practicum.dto.request.RequestCountDto;
 import ru.practicum.dto.request.RequestStatus;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.events.mapper.EventMapper;

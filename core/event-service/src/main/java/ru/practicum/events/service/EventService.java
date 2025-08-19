@@ -8,7 +8,6 @@ import ru.practicum.events.model.Event;
 
 import java.util.List;
 
-@Transactional(readOnly = true)
 public interface EventService {
 
     List<EventShortDto> getEventsByUser(Long userId, Integer from, Integer size);
