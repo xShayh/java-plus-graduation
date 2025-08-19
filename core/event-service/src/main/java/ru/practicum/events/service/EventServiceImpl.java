@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.categories.repository.CategoryRepository;
 import ru.practicum.categories.model.Category;
 import ru.practicum.client.RequestClient;
@@ -392,6 +393,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventRequestStatusUpdateResultDto changeEventState(
             Long userId,
             Long eventId,
@@ -423,8 +425,12 @@ public class EventServiceImpl implements EventService {
                 List<ParticipationRequestDto> requestUpdated = requestClient.updateStatus(
                         RequestStatus.CONFIRMED, idsToChangeStatus);
 
-                event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-                eventRepository.save(event);
+                List<ParticipationRequestDto> allConfirmed = requestClient.getByStatus(eventId, RequestStatus.CONFIRMED);
+
+                event.setConfirmedRequests((long) allConfirmed.size());
+                eventRepository.saveAndFlush(event);
+
+                log.info("Сохранили confirmedRequests = {}", allConfirmed.size());
 
                 return new EventRequestStatusUpdateResultDto(requestUpdated, null);
             } else {
@@ -442,7 +448,6 @@ public class EventServiceImpl implements EventService {
                     throw new ConflictDataException("Заявка" + request.getStatus() + "уже подтверждена.");
                 }
             }
-
             List<ParticipationRequestDto> requestUpdated = requestClient.updateStatus(
                     RequestStatus.REJECTED, idsToChangeStatus);
             return new EventRequestStatusUpdateResultDto(null, requestUpdated);

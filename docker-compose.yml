@@ -67,8 +67,8 @@ services:
       retries: 10
 
   stats-server:
-    build: ./stat-service/stat-server
-    image: stat-server
+    build: ./stats-service/stats-server
+    image: stats-server
     container_name: ewm-stats-server
     ports:
       - "9090:9090"
@@ -170,3 +170,9 @@ services:
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
+    ports:
+      - "5432:5432"
+
+networks:
+  ewm-net:
+    external: true
