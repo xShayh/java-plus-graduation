@@ -13,11 +13,14 @@ import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.exceptions.ConflictDataException;
 import ru.practicum.exceptions.InvalidDataException;
 import ru.practicum.exceptions.NotFoundException;
+import ru.practicum.grpc.stats.action.ActionTypeProto;
 import ru.practicum.mapper.RequestMapper;
 import ru.practicum.model.Request;
 import ru.practicum.repository.RequestRepository;
+import ru.practicum.stat.StatClient;
 
 import java.security.InvalidParameterException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +34,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestMapper requestMapper;
     private final UserClient userClient;
     private final EventClient eventClient;
+    private final StatClient statClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -60,6 +64,8 @@ public class RequestServiceImpl implements RequestService {
                 .build();
 
         request = requestRepository.save(request);
+
+        statClient.registerUserAction(eventId, userId, ActionTypeProto.ACTION_REGISTER, Instant.now());
 
         return requestMapper.toParticipationRequestDto(request);
     }

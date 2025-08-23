@@ -7,6 +7,7 @@ import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.events.model.Event;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface EventService {
 
@@ -27,10 +28,10 @@ public interface EventService {
 
     List<EventShortDto> publicGetEvents(EventPublicParam eventPublicParam);
 
-    EventFullDto publicGetEvent(Long eventId);
+    EventFullDto publicGetEvent(Long eventId, Long userId);
 
     @Transactional
-    Long addLike(Long userId, Long eventId);
+    void addLike(Long userId, Long eventId);
 
     @Transactional
     Long removeLike(Long userId, Long eventId);
@@ -55,4 +56,7 @@ public interface EventService {
             Long userId,
             Long eventId,
             EventRequestStatusUpdateRequestDto requestStatusUpdateRequest);
+
+    Stream<RecommendedEventDto> getRecommendations(Long userId, int limit);
+
 }
