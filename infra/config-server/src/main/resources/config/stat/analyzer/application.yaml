@@ -11,7 +11,7 @@ grpc:
 analyzer:
   kafka:
     config:
-      bootstrap-servers: "host.docker.internal:9092"
+      bootstrap-servers: "kafka:29092"
 
       user-action-consumer:
         group-id: "action-analyzer-group"
