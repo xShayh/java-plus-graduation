@@ -44,9 +44,9 @@ public class EventPrivateController {
     }
 
     @PostMapping("/{eventId}/like")
-    public ResponseEntity<Long> addLike(@PathVariable(name = "eventId") Long eventId,
+    public void addLike(@PathVariable(name = "eventId") Long eventId,
                                         @PathVariable(name = "userId") Long userId) {
-        return ResponseEntity.ok().body(eventService.addLike(userId, eventId));
+        eventService.addLike(userId, eventId);
     }
 
     @DeleteMapping("/{eventId}/like")

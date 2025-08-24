@@ -1,4 +1,4 @@
-package client;
+package ru.practicum.client;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.*;
