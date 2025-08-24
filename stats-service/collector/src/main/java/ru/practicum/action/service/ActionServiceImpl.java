@@ -15,20 +15,20 @@ import ru.practicum.config.KafkaConfig;
 @RequiredArgsConstructor
 @Slf4j
 public class ActionServiceImpl implements ActionService {
-    private final Producer<String, SpecificRecordBase> producer;
+    private final Producer<Long, SpecificRecordBase> producer;
     private final KafkaConfig kafkaConfig;
 
     @Override
     public void collectUserAction(UserAction userAction) {
         log.info("ActionService: call collectUserAction for UserAction = {}", userAction);
         send(kafkaConfig.getKafkaProperties().getUserActionTopic(),
-                userAction.getEventId().toString(),
+                userAction.getEventId(),
                 userAction.getTimestamp().toEpochMilli(),
                 UserActionMapper.toUserActionAvro(userAction));
     }
 
-    private void send(String topic, String key, Long timestamp, SpecificRecordBase specificRecordBase) {
-        ProducerRecord<String, SpecificRecordBase> rec = new ProducerRecord<>(
+    private void send(String topic, Long key, Long timestamp, SpecificRecordBase specificRecordBase) {
+        ProducerRecord<Long, SpecificRecordBase> rec = new ProducerRecord<>(
                 topic,
                 null,
                 timestamp,
