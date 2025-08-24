@@ -1,53 +1,36 @@
-grpc:
-  server:
-    port: 0
-  client:
-    analyzer:
-      address: 'discovery:///analyzer'
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
-
-analyzer:
-  kafka:
-    config:
-      bootstrap-servers: localhost:9092
-
-      user-action-consumer:
-        group-id: "action-analyzer-group"
-        client-id: "action-consumer-1"
-        key-deserializer: "org.apache.kafka.common.serialization.LongDeserializer"
-        value-deserializer: "ru.practicum.avro.UserActionDeserializer"
-        attempt-timeout: 1000
-        enable-auto-commit: "false"
-
-      event-similarity-consumer:
-        group-id: "similarity-analyzer-group"
-        client-id: "similarity-consumer-1"
-        key-deserializer: "org.apache.kafka.common.serialization.LongDeserializer"
-        value-deserializer: "ru.practicum.avro.EventSimilarityDeserializer"
-        attempt-timeout: 1000
-        enable-auto-commit: "false"
-
-      user-action-topic: "stats.user-actions.v1"
-      events-similarity-topic: "stats.events-similarity.v1"
-
 spring:
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        format_sql: true
   sql:
     init:
       mode: always
-  output:
-    ansi:
-      enabled: ALWAYS
+  jpa:
+    hibernate:
+      ddl-auto: none
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://stat-db:5432/ewm-stat
-    username: root
-    password: root
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/recommendationDb
+    username: dbuser
+    password: 12345
+
+analyzer:
+  kafka:
+    action-consumer-props:
+      bootstrap.servers: localhost:9092
+      group.id: "analyzer-group"
+      key.deserializer: org.apache.kafka.common.serialization.LongDeserializer
+      value.deserializer: serializer.UserAvroSpecificDeserializer
+    similarity-consumer-props:
+      bootstrap.servers: localhost:9092
+      group.id: "analyzer-group"
+      key.deserializer: org.apache.kafka.common.serialization.LongDeserializer
+      value.deserializer: serializer.EventSimilarityDeserializer
+    topics:
+      user-actions: stats.user-actions.v1
+      events-similarity: stats.events-similarity.v1
+  user-action-weight:
+    view: 0.4
+    register: 0.8
+    like: 1.0
+
+grpc:
+  server:
+    port: 0

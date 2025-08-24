@@ -9,10 +9,10 @@ import ru.practicum.grpc.stats.action.ActionTypeProto;
 import ru.practicum.grpc.stats.action.UserActionProto;
 import ru.practicum.grpc.stats.analyzer.RecommendationsControllerGrpc;
 import ru.practicum.grpc.stats.collector.UserActionControllerGrpc;
-import ru.practicum.grpc.stats.request.InteractionsCountRequestProto;
-import ru.practicum.grpc.stats.request.RecommendedEventProto;
-import ru.practicum.grpc.stats.request.SimilarEventsRequestProto;
-import ru.practicum.grpc.stats.request.UserPredictionsRequestProto;
+import ru.practicum.grpc.stats.recommendation.InteractionsCountRequestProto;
+import ru.practicum.grpc.stats.recommendation.RecommendedEventProto;
+import ru.practicum.grpc.stats.recommendation.SimilarEventsRequestProto;
+import ru.practicum.grpc.stats.recommendation.UserPredictionsRequestProto;
 
 import java.time.Instant;
 import java.util.Iterator;
@@ -62,20 +62,6 @@ public class StatClientImpl implements StatClient {
                 .setMaxResults(maxResults)
                 .build();
         Iterator<RecommendedEventProto> iterator = analyzerClient.getSimilarEvents(request);
-
-        return asStream(iterator);
-    }
-
-    @Override
-    public Stream<RecommendedEventProto> getRecommendationsForUser(long userId, int maxResults) {
-        log.info("statsClientImpl getRecommendationsForUser for userId = {}, maxResults = {}", userId, maxResults);
-
-        UserPredictionsRequestProto request = UserPredictionsRequestProto.newBuilder()
-                .setUserId(userId)
-                .setMaxResults(maxResults)
-                .build();
-
-        Iterator<RecommendedEventProto> iterator = analyzerClient.getRecommendationsForUser(request);
 
         return asStream(iterator);
     }

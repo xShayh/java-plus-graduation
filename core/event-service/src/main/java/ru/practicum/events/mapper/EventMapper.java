@@ -6,10 +6,8 @@ import org.springframework.stereotype.Component;
 import ru.practicum.categories.mapper.CategoryMapper;
 import ru.practicum.categories.model.Category;
 import ru.practicum.dto.events.*;
-import ru.practicum.dto.request.RequestCountDto;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.events.model.Event;
-import ru.practicum.grpc.stats.request.RecommendedEventProto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +27,7 @@ public class EventMapper {
                 .eventDate(event.getEventDate())
                 .paid(event.getPaid())
                 .title(event.getTitle())
-                .views(event.getViews())
+                .rating(event.getRating())
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())
                 .location(locationMapper.toLocationDto(event.getLocation()))
@@ -50,7 +48,7 @@ public class EventMapper {
                 .eventDate(event.getEventDate())
                 .paid(event.getPaid())
                 .title(event.getTitle())
-                .views(event.getViews())
+                .rating(event.getRating())
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())
                 .location(locationMapper.toLocationDto(event.getLocation()))
@@ -95,7 +93,7 @@ public class EventMapper {
                 initiator,
                 event.getPaid(),
                 event.getTitle(),
-                event.getViews()
+                event.getRating()
         );
     }
 
@@ -103,14 +101,4 @@ public class EventMapper {
         return adminEvents.stream().map(this::toEventFullDto).toList();
     }
 
-    public RecommendedEventDto map(RecommendedEventProto proto) {
-        if (proto == null) {
-            return null;
-        }
-
-        return RecommendedEventDto.builder()
-                .eventId(proto.getEventId())
-                .score(proto.getScore())
-                .build();
-    }
 }

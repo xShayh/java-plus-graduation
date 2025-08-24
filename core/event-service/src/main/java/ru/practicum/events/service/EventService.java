@@ -7,7 +7,6 @@ import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.events.model.Event;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public interface EventService {
 
@@ -57,6 +56,6 @@ public interface EventService {
             Long eventId,
             EventRequestStatusUpdateRequestDto requestStatusUpdateRequest);
 
-    Stream<RecommendedEventDto> getRecommendations(Long userId, int limit);
+    List<EventShortDto> getRecommendations(Long userId, Integer from, Integer size);
 
 }

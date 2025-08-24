@@ -1,5 +1,6 @@
 package ru.practicum.events.service;
 
+import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -30,14 +31,13 @@ import ru.practicum.exceptions.ConflictDataException;
 import ru.practicum.exceptions.EventDateValidationException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.grpc.stats.action.ActionTypeProto;
+import ru.practicum.grpc.stats.recommendation.RecommendedEventProto;
+import ru.practicum.stat.AnalyzerClient;
 import ru.practicum.stat.StatClientImpl;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Service
@@ -53,6 +53,7 @@ public class EventServiceImpl implements EventService {
     private final StatClientImpl statClientImpl;
     private final UserClient userClient;
     private final RequestClient requestClient;
+    AnalyzerClient analyzerClient;
 
     private static final String START = "2025-01-01 00:00:00";
     private static final String END = "2025-12-31 23:59:59";
@@ -259,7 +260,7 @@ public class EventServiceImpl implements EventService {
                         .map(event -> eventMapper.toEventShortDto(event, getUserById(event.getInitiatorId())))
                         .toList();
                 case VIEWS -> events.stream()
-                        .sorted(Comparator.comparing(Event::getViews))
+                        .sorted(Comparator.comparing(Event::getRating))
                         .map(event -> eventMapper.toEventShortDto(event, getUserById(event.getInitiatorId())))
                         .toList();
             };
@@ -432,9 +433,58 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Stream<RecommendedEventDto> getRecommendations(Long userId, int limit) {
-        return statClientImpl.getRecommendationsForUser(userId, limit)
-                .map(eventMapper::map);
+    public List<EventShortDto> getRecommendations(Long userId, Integer from, Integer size) {
+        List<RecommendedEventProto> recommendedEvents;
+        try {
+            recommendedEvents = analyzerClient.getRecommendations(userId, size)
+                    .skip(from)
+                    .limit(size)
+                    .toList();
+        } catch (StatusRuntimeException e) {
+            log.error("Failed to fetch recommendations for userId={}: {}", userId, e.getStatus(), e);
+            return List.of();
+        }
+        if (recommendedEvents.isEmpty()) {
+            log.info("No recommendations available for userId={}", userId);
+            return List.of();
+        }
+
+        List<Long> eventIds = recommendedEvents.stream()
+                .map(RecommendedEventProto::getEventId)
+                .toList();
+
+        List<Event> events = eventRepository.findAllById(eventIds).stream()
+                .filter(event -> event.getState() == EventState.PUBLISHED)
+                .toList();
+
+        if (events.isEmpty()) {
+            log.info("No published events found for recommended event IDs: {}", eventIds);
+            return List.of();
+        }
+
+        List<Long> userIds = events.stream().map(Event::getInitiatorId).toList();
+        List<UserShortDto> usersDto = userClient.getByIds(userIds).stream()
+                .map(userDto -> UserShortDto.builder().id(userDto.getId()).name(userDto.getName()).build())
+                .toList();
+
+        Map<Long, Double> ratings;
+        try {
+            ratings = analyzerClient.getInteractionsCount(eventIds);
+        } catch (StatusRuntimeException e) {
+            log.error("Failed to retrieve ratings for event IDs {}: {}", eventIds, e.getStatus(), e);
+            ratings = Map.of();
+        }
+
+        Map<Long, Double> finalRatings = ratings;
+        return events.stream().map(event -> {
+            UserShortDto initiator = usersDto.stream()
+                    .filter(user -> user.getId().equals(event.getInitiatorId()))
+                    .findAny()
+                    .orElseThrow(() -> new NotFoundException("User with id=" + event.getInitiatorId() + " not found"));
+            double rating = finalRatings.getOrDefault(event.getId(), 0.0);
+            event.setRating(rating);
+            return eventMapper.toEventShortDto(event, initiator);
+        }).toList();
     }
 
     @Override

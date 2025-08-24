@@ -1,18 +1,19 @@
 aggregator:
   kafka:
-    config:
-      bootstrap-servers: localhost:9092
-
-      producer-client-id-config: "producer-2"
-      producer-key-serializer: "org.apache.kafka.common.serialization.LongSerializer"
-      producer-value-serializer: "ru.practicum.avro.AvroSerializer"
-
-      consumer-group-id: "aggregator-group"
-      consumer-client-id-config: "consumer-1"
-      consumer-key-deserializer: "org.apache.kafka.common.serialization.LongDeserializer"
-      consumer-value-deserializer: "ru.practicum.avro.UserActionDeserializer"
-      consumer-attempt-timeout: 1000
-      consumer-enable-auto-commit: "false"
-
-      user-action-topic: "stats.user-actions.v1"
-      events-similarity-topic: "stats.events-similarity.v1"
+    producer-props:
+      bootstrap.servers: localhost:9092
+      client.id: "aggregator-client"
+      key.serializer: org.apache.kafka.common.serialization.LongSerializer
+      value.serializer: serializer.AvroSpecificSerializer
+    consumer-props:
+      bootstrap.servers: localhost:9092
+      group.id: "aggregator-group"
+      key.deserializer: org.apache.kafka.common.serialization.LongDeserializer
+      value.deserializer: serializer.UserAvroSpecificDeserializer
+    topics:
+      user-actions: stats.user-actions.v1
+      events-similarity: stats.events-similarity.v1
+  user-action-weight:
+    view: 0.4
+    register: 0.8
+    like: 1.0
