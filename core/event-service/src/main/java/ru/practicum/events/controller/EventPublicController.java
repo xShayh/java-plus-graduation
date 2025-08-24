@@ -46,7 +46,7 @@ public class EventPublicController {
     }
 
     @GetMapping("/{eventId}")
-    public ResponseEntity<EventFullDto> publicGetEvent(@PathVariable("id") Long eventId,
+    public ResponseEntity<EventFullDto> publicGetEvent(@PathVariable("eventId") Long eventId,
                                                        @RequestHeader("X-EWM-USER-ID") Long userId,
                                                        HttpServletRequest request) {
         saveHit(request);
