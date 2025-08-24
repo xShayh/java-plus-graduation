@@ -53,7 +53,7 @@ public class EventServiceImpl implements EventService {
     private final StatClientImpl statClientImpl;
     private final UserClient userClient;
     private final RequestClient requestClient;
-    AnalyzerClient analyzerClient;
+    private final AnalyzerClient analyzerClient;
 
     private static final String START = "2025-01-01 00:00:00";
     private static final String END = "2025-12-31 23:59:59";
@@ -87,6 +87,8 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
+    @Override
+    @Transactional
     public EventFullDto updateAdminEvent(Long eventId, UpdateEventAdminRequestDto updateEventAdminRequest) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
@@ -153,6 +155,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto createEvent(Long userId, NewEventDto newEventDto) {
         log.info("Создание события пользователем с ID={}", userId);
         if (newEventDto.getEventDate() != null &&
@@ -185,6 +188,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto updateEventByUser(Long userId, Long eventId, UpdateEventUserDto updateEventUserDto) {
         log.info("Обновление события с ID={} пользователем с ID={}", eventId, userId);
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
@@ -283,6 +287,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public Long removeLike(Long userId, Long eventId) {
         if (likeRepository.existsByIdUserIdAndIdEventId(userId, eventId)) {
             likeRepository.deleteByIdUserIdAndIdEventId(userId, eventId);
